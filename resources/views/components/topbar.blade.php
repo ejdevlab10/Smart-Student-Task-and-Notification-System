@@ -19,14 +19,11 @@
 
         <!-- Notifications -->
         <a href="#"
-           class="relative text-slate-500 hover:text-slate-800 text-xl">
-
-            🔔
-
-            <span class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+        class="relative text-slate-500 hover:text-slate-800">
+            <i data-lucide="bell" class="w-6 h-6"></i>
+            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
                 3
             </span>
-
         </a>
 
 

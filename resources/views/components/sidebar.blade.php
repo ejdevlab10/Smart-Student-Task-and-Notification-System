@@ -24,8 +24,11 @@
            class="flex items-center gap-3 px-4 py-3 rounded-xl
            {{ request()->is('/') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
 
-            <span>🏠</span>
-            <span class="font-medium">Dashboard</span>
+            <i data-lucide="house" class="w-5 h-5"></i>
+
+            <span class="font-medium">
+                Dashboard
+            </span>
 
         </a>
 
@@ -35,8 +38,11 @@
            class="flex items-center gap-3 px-4 py-3 rounded-xl
            {{ request()->is('tasks*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
 
-            <span>📚</span>
-            <span class="font-medium">My Tasks</span>
+            <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+
+            <span class="font-medium">
+                My Tasks
+            </span>
 
         </a>
 
@@ -45,8 +51,11 @@
         <a href="#"
            class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
 
-            <span>📅</span>
-            <span>Calendar</span>
+            <i data-lucide="calendar-days" class="w-5 h-5"></i>
+
+            <span>
+                Calendar
+            </span>
 
         </a>
 
@@ -55,8 +64,11 @@
         <a href="#"
            class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
 
-            <span>🔔</span>
-            <span>Notifications</span>
+            <i data-lucide="bell" class="w-5 h-5"></i>
+
+            <span>
+                Notifications
+            </span>
 
             <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
                 3
@@ -66,11 +78,15 @@
 
 
         <!-- Announcements -->
-        <a href="#"
-           class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
+        <a href="{{ route('announcements.index') }}"
+           class="flex items-center gap-3 px-4 py-3 rounded-xl
+           {{ request()->is('announcements*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
 
-            <span>📢</span>
-            <span>Announcements</span>
+            <i data-lucide="megaphone" class="w-5 h-5"></i>
+
+            <span>
+                Announcements
+            </span>
 
         </a>
 
@@ -83,8 +99,11 @@
         <a href="#"
            class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
 
-            <span>⚙️</span>
-            <span>Settings</span>
+            <i data-lucide="settings" class="w-5 h-5"></i>
+
+            <span>
+                Settings
+            </span>
 
         </a>
 
