@@ -20,9 +20,9 @@
     <nav class="flex-1 px-4 py-6 space-y-2">
 
         <!-- Dashboard -->
-        <a href="{{ url('/') }}"
+        <a href="{{ route('dashboard') }}"
            class="flex items-center gap-3 px-4 py-3 rounded-xl
-           {{ request()->is('/') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
+           {{ request()->routeIs('dashboard') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
 
             <i data-lucide="house" class="w-5 h-5"></i>
 
@@ -33,48 +33,169 @@
         </a>
 
 
-        <!-- Tasks -->
-        <a href="{{ route('tasks.index') }}"
-           class="flex items-center gap-3 px-4 py-3 rounded-xl
-           {{ request()->is('tasks*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
+        {{-- ================= STUDENT ================= --}}
+        @if(auth()->user()->isStudent())
 
-            <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+            <!-- My Tasks -->
+            <a href="{{ route('tasks.index') }}"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl
+               {{ request()->is('tasks*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
 
-            <span class="font-medium">
-                My Tasks
-            </span>
+                <i data-lucide="clipboard-list" class="w-5 h-5"></i>
 
-        </a>
+                <span class="font-medium">
+                    My Tasks
+                </span>
 
-
-        <!-- Calendar -->
-        <a href="#"
-           class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
-
-            <i data-lucide="calendar-days" class="w-5 h-5"></i>
-
-            <span>
-                Calendar
-            </span>
-
-        </a>
+            </a>
 
 
-        <!-- Notifications -->
-        <a href="#"
-           class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
+            <!-- Calendar -->
+            <a href="#"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
 
-            <i data-lucide="bell" class="w-5 h-5"></i>
+                <i data-lucide="calendar-days" class="w-5 h-5"></i>
 
-            <span>
-                Notifications
-            </span>
+                <span>
+                    Calendar
+                </span>
 
-            <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                3
-            </span>
+            </a>
 
-        </a>
+
+            <!-- Notifications -->
+            <a href="#"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
+
+                <i data-lucide="bell" class="w-5 h-5"></i>
+
+                <span>
+                    Notifications
+                </span>
+
+                <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                    3
+                </span>
+
+            </a>
+
+        @endif
+
+
+        {{-- ================= TEACHER ================= --}}
+        @if(auth()->user()->isTeacher())
+
+            <!-- My Classes -->
+            <a href="#"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
+
+                <i data-lucide="school" class="w-5 h-5"></i>
+
+                <span class="font-medium">
+                    My Classes
+                </span>
+
+            </a>
+
+
+            <!-- Assignments -->
+            <a href="{{ route('tasks.index') }}"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl
+               {{ request()->is('tasks*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
+
+                <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+
+                <span class="font-medium">
+                    Assignments
+                </span>
+
+            </a>
+
+
+            <!-- Calendar -->
+            <a href="#"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
+
+                <i data-lucide="calendar-days" class="w-5 h-5"></i>
+
+                <span>
+                    Calendar
+                </span>
+
+            </a>
+
+        @endif
+
+
+        {{-- ================= ADMIN ================= --}}
+        @if(auth()->user()->role === 'admin')
+
+            <!-- Students -->
+            <a href="#"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
+
+                <i data-lucide="users" class="w-5 h-5"></i>
+
+                <span class="font-medium">
+                    Students
+                </span>
+
+            </a>
+
+
+            <!-- Teachers -->
+            <a href="#"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
+
+                <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+
+                <span class="font-medium">
+                    Teachers
+                </span>
+
+            </a>
+
+
+            <!-- Classes -->
+            <a href="#"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
+
+                <i data-lucide="school" class="w-5 h-5"></i>
+
+                <span class="font-medium">
+                    Classes
+                </span>
+
+            </a>
+
+
+            <!-- Subjects -->
+            <a href="#"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
+
+                <i data-lucide="book-open" class="w-5 h-5"></i>
+
+                <span class="font-medium">
+                    Subjects
+                </span>
+
+            </a>
+
+
+            <!-- Assignments -->
+            <a href="{{ route('tasks.index') }}"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl
+               {{ request()->is('tasks*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
+
+                <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+
+                <span class="font-medium">
+                    Assignments
+                </span>
+
+            </a>
+
+        @endif
 
 
         <!-- Announcements -->

@@ -36,6 +36,7 @@ class TaskController extends Controller
             'description' => $validated['description'] ?? null,
             'due_date' => $validated['due_date'],
             'status' => 'Pending',
+            'created_by' => auth()->id(),
         ]);
 
         return redirect()
