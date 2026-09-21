@@ -11,13 +11,13 @@ class RoleMiddleware
     public function handle(
         Request $request,
         Closure $next,
-        string $role
+        ...$roles
     ): Response {
         if (! $request->user()) {
             return redirect()->route('login');
         }
 
-        if ($request->user()->role !== $role) {
+        if (! in_array($request->user()->role, $roles)) {
             abort(403, 'You are not authorized to access this page.');
         }
 
