@@ -26,4 +26,10 @@ class Task extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+    public function students()
+    {
+        return $this->belongsToMany(User::class, 'task_user')
+            ->withPivot('status', 'completed_at')
+            ->withTimestamps();
+    }
 }

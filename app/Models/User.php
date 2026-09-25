@@ -69,4 +69,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Task::class, 'created_by');
     }
+    public function assignedTasks()
+    {
+        return $this->belongsToMany(Task::class, 'task_user')
+            ->withPivot('status', 'completed_at')
+            ->withTimestamps();
+    }
 }
