@@ -196,6 +196,27 @@
                     @enderror
 
                 </div>
+                    <!-- student selection -->
+                <div class="mb-3">
+                    <label for="students" class="form-label">Assign Students</label>
+
+                    <select
+                        name="students[]"
+                        id="students"
+                        class="form-select"
+                        multiple
+                    >
+                        @foreach(\App\Models\User::where('role', 'student')->get() as $student)
+                            <option value="{{ $student->id }}">
+                                {{ $student->name }} ({{ $student->email }})
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <small class="text-muted">
+                        Hold Ctrl (Windows) or Command (Mac) to select multiple students.
+                    </small>
+                </div>
 
 
                 <!-- Buttons -->

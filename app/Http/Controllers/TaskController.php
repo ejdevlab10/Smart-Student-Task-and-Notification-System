@@ -34,9 +34,11 @@ class TaskController extends Controller
             'type' => ['required', 'in:Assignment,Project,Quiz,Exam'],
             'description' => ['nullable', 'string'],
             'due_date' => ['required', 'date'],
+            'students' => 'nullable|array',
+            'students.*' => 'exists:users,id',  
         ]);
 
-        Task::create([
+        $task = Task::create([
             'title' => $validated['title'],
             'subject' => $validated['subject'],
             'type' => $validated['type'],
@@ -45,6 +47,11 @@ class TaskController extends Controller
             'status' => 'Pending',
             'created_by' => auth()->id(),
         ]);
+        if ($request->filled('students')) {
+            $task->students()->attach($request->students, [
+                'status' => 'Pending',
+            ]);
+        }
 
         return redirect()
             ->route('tasks.index')
