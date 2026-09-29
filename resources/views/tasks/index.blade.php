@@ -70,17 +70,37 @@
                                     </span>
                                 </a>
 
-                                @if($task->status === 'Pending')
+                                @if(auth()->user()->isStudent())
 
-                                    <span class="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded-full">
-                                        Pending
-                                    </span>
+                                    @if($task->pivot->status === 'Pending')
+
+                                        <span class="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded-full">
+                                            Pending
+                                        </span>
+
+                                    @else
+
+                                        <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                                            Completed
+                                        </span>
+
+                                    @endif
 
                                 @else
 
-                                    <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
-                                        Completed
-                                    </span>
+                                    @if($task->status === 'Pending')
+
+                                        <span class="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded-full">
+                                            Pending
+                                        </span>
+
+                                    @else
+
+                                        <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                                            Completed
+                                        </span>
+
+                                    @endif
 
                                 @endif
 
@@ -89,7 +109,35 @@
                                 </p>
 
 
-                                @if($task->status === 'Pending')
+                                @if(auth()->user()->isStudent())
+
+                                    @if($task->pivot->status === 'Pending')
+
+                                        <form action="{{ route('tasks.complete', $task) }}"
+                                            method="POST"
+                                            class="mt-3">
+
+                                            @csrf
+
+                                            @method('PATCH')
+
+                                            <button
+                                                type="submit"
+                                                class="inline-flex items-center gap-2 text-sm bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg">
+
+                                                <i data-lucide="check" class="w-4 h-4"></i>
+
+                                                <span>
+                                                    Mark Completed
+                                                </span>
+
+                                            </button>
+
+                                        </form>
+
+                                    @endif
+
+                                @elseif($task->status === 'Pending')
 
                                     <form action="{{ route('tasks.complete', $task) }}"
                                         method="POST"
@@ -102,10 +150,13 @@
                                         <button
                                             type="submit"
                                             class="inline-flex items-center gap-2 text-sm bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg">
+
                                             <i data-lucide="check" class="w-4 h-4"></i>
+
                                             <span>
                                                 Mark Completed
                                             </span>
+
                                         </button>
 
                                     </form>

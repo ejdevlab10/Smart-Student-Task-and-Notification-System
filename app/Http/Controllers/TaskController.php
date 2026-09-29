@@ -12,7 +12,14 @@ class TaskController extends Controller
     {
         Gate::authorize('viewAny', Task::class);
 
-        $tasks = Task::orderBy('due_date')->get();
+        if (auth()->user()->isStudent()) {
+            $tasks = auth()->user()
+                ->assignedTasks()
+                ->orderBy('due_date')
+                ->get();
+        } else {
+            $tasks = Task::orderBy('due_date')->get();
+        }
 
         return view('tasks.index', compact('tasks'));
     }
@@ -93,9 +100,27 @@ class TaskController extends Controller
 
     public function complete(Task $task)
     {
-        $task->update([
-            'status' => 'Completed',
-        ]);
+        if (auth()->user()->isStudent()) {
+
+            $assignment = $task->students()
+                ->where('users.id', auth()->id())
+                ->first();
+
+            if (!$assignment) {
+                abort(403);
+            }
+
+            $task->students()->updateExistingPivot(auth()->id(), [
+                'status' => 'Completed',
+                'completed_at' => now(),
+            ]);
+
+        } else {
+
+            $task->update([
+                'status' => 'Completed',
+            ]);
+        }
 
         return redirect()
             ->route('tasks.index')
