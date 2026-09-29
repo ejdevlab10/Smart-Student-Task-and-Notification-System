@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Announcement;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Gate;
 class AnnouncementController extends Controller
 {
     public function index()
     {
+        Gate::authorize('viewAny', Announcement::class);
+
         $announcements = Announcement::orderByDesc('is_pinned')
             ->orderByDesc('created_at')
             ->get();
@@ -18,11 +20,15 @@ class AnnouncementController extends Controller
 
     public function create()
     {
+        Gate::authorize('create', Announcement::class);
+
         return view('announcements.create');
     }
 
     public function store(Request $request)
     {
+        Gate::authorize('create', Announcement::class);
+
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
@@ -44,16 +50,19 @@ class AnnouncementController extends Controller
 
     public function show(Announcement $announcement)
     {
+        Gate::authorize('view', $announcement);
         return view('announcements.show', compact('announcement'));
     }
 
     public function edit(Announcement $announcement)
     {
+        Gate::authorize('update', $announcement);
         return view('announcements.edit', compact('announcement'));
     }
 
     public function update(Request $request, Announcement $announcement)
     {
+        Gate::authorize('update', $announcement);
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
@@ -75,6 +84,7 @@ class AnnouncementController extends Controller
 
     public function destroy(Announcement $announcement)
     {
+        Gate::authorize('delete', $announcement);
         $announcement->delete();
 
         return redirect()
