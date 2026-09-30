@@ -32,6 +32,7 @@
 
                     <div class="flex items-start justify-between gap-4">
 
+                        {{-- Notification Information --}}
                         <div class="flex gap-4">
 
                             <div class="w-11 h-11 rounded-xl bg-blue-100
@@ -50,9 +51,11 @@
                                 </p>
 
                                 @if(isset($notification->data['due_date']))
+
                                     <p class="text-xs text-slate-400 mt-2">
                                         Due: {{ $notification->data['due_date'] }}
                                     </p>
+
                                 @endif
 
                                 <p class="text-xs text-slate-400 mt-2">
@@ -64,31 +67,62 @@
                         </div>
 
 
-                        @if(!$notification->read_at)
+                        {{-- Notification Action --}}
+                        <div>
 
-                            <form
-                                action="{{ route('notifications.read', $notification->id) }}"
-                                method="POST"
-                            >
-                                @csrf
-                                @method('PATCH')
+                            @if(!empty($notification->data['task_id']))
 
-                                <button
-                                    type="submit"
-                                    class="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                                {{-- Task Notification --}}
+                                <form
+                                    action="{{ route('notifications.read', $notification->id) }}"
+                                    method="POST"
                                 >
-                                    View
-                                </button>
 
-                            </form>
+                                    @csrf
+                                    @method('PATCH')
 
-                        @else
+                                    <button
+                                        type="submit"
+                                        class="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                                    >
+                                        View Task
+                                    </button>
 
-                            <span class="text-xs text-slate-400">
-                                Read
-                            </span>
+                                </form>
 
-                        @endif
+                            @else
+
+                                {{-- Notification Without Task --}}
+                                @if(!$notification->read_at)
+
+                                    <form
+                                        action="{{ route('notifications.read', $notification->id) }}"
+                                        method="POST"
+                                    >
+
+                                        @csrf
+                                        @method('PATCH')
+
+                                        <button
+                                            type="submit"
+                                            class="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                                        >
+                                            Mark Read
+                                        </button>
+
+                                    </form>
+
+                                @else
+
+                                    <span class="text-xs text-slate-400">
+                                        Read
+                                    </span>
+
+                                @endif
+
+                            @endif
+
+                        </div>
 
                     </div>
 

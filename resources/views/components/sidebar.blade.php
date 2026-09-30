@@ -73,9 +73,15 @@
                     Notifications
                 </span>
 
-                <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                    3
-                </span>
+                @php
+                    $unreadNotifications = auth()->user()->unreadNotifications()->count();
+                @endphp
+
+                @if($unreadNotifications > 0)
+                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                        {{ $unreadNotifications }}
+                    </span>
+                @endif
 
             </a>
 
