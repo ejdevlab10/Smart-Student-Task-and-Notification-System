@@ -18,7 +18,7 @@
 <div class="flex items-center gap-5">
 
     <!-- Notifications -->
-    <a href="#"
+    <a href="{{ route('notifications.index') }}"
        class="relative text-slate-500 hover:text-slate-800">
 
         <i data-lucide="bell" class="w-6 h-6"></i>
