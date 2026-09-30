@@ -20,7 +20,24 @@ class TaskPolicy
      */
     public function view(User $user, Task $task): bool
     {
-        return true;
+        // Admins can view everything
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        // Teachers can view tasks they created
+        if ($user->isTeacher()) {
+            return $task->created_by === $user->id;
+        }
+
+        // Students can view tasks assigned to them
+        if ($user->isStudent()) {
+            return $task->students()
+                ->where('users.id', $user->id)
+                ->exists();
+        }
+
+        return false;
     }
 
     /**

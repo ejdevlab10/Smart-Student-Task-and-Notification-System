@@ -82,6 +82,8 @@ class TaskController extends Controller
     {
         Gate::authorize('view', $task);
 
+        $task->load('students');
+
         return view('tasks.show', compact('task'));
     }
 
