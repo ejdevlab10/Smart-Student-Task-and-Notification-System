@@ -16,11 +16,23 @@
             <section class="mb-8">
 
                 <h1 class="text-3xl font-bold text-slate-900">
-                    Good afternoon, EJ! 👋
+                    Hello! {{ auth()->user()->name }}! 👋
                 </h1>
 
                 <p class="mt-2 text-slate-500">
-                    Here's what's happening with your academic tasks.
+                    @if(auth()->user()->isStudent())
+                        <p class="mt-2 text-slate-500">
+                            Here's what's happening with your academic tasks.
+                        </p>
+                    @elseif(auth()->user()->isTeacher())
+                        <p class="mt-2 text-slate-500">
+                            Here's an overview of your assignments and academic activities.
+                        </p>
+                    @else
+                        <p class="mt-2 text-slate-500">
+                            Here's an overview of the school's task and announcement activity.
+                        </p>
+                    @endif
                 </p>
 
             </section>
@@ -232,7 +244,13 @@
                         </h3>
 
                         <p class="text-sm text-slate-500 mt-1">
-                            Latest updates from your teachers
+                            @if(auth()->user()->isStudent())
+                                Latest updates from your teachers
+                            @elseif(auth()->user()->isTeacher())
+                                Latest announcements
+                            @else
+                                Latest system announcements
+                            @endif
                         </p>
 
                     </div>
@@ -240,94 +258,49 @@
 
                     <div class="p-6 space-y-5">
 
-                        <!-- Announcement -->
-                        <div>
+                        @forelse($announcements as $announcement)
 
-                            <div class="flex gap-3">
+                            <div>
+                                <div class="flex gap-3">
 
-                                <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                    <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                        📢
+                                    </div>
+
+                                    <div>
+
+                                        <h4 class="text-sm font-semibold text-slate-900">
+                                            {{ $announcement->title }}
+                                        </h4>
+
+                                        <p class="text-sm text-slate-500 mt-1">
+                                            {{ Str::limit($announcement->content, 100) }}
+                                        </p>
+
+                                        <p class="text-xs text-slate-400 mt-2">
+                                            {{ $announcement->created_at->diffForHumans() }}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        @empty
+
+                            <div class="text-center py-6">
+
+                                <div class="text-3xl mb-3">
                                     📢
                                 </div>
 
-                                <div>
-
-                                    <h4 class="text-sm font-semibold text-slate-900">
-                                        Class Schedule Update
-                                    </h4>
-
-                                    <p class="text-sm text-slate-500 mt-1">
-                                        The updated class schedule has been posted.
-                                    </p>
-
-                                    <p class="text-xs text-slate-400 mt-2">
-                                        2 hours ago
-                                    </p>
-
-                                </div>
+                                <p class="text-slate-500">
+                                    No announcements yet.
+                                </p>
 
                             </div>
 
-                        </div>
-
-
-                        <!-- Announcement -->
-                        <div>
-
-                            <div class="flex gap-3">
-
-                                <div class="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0">
-                                    📌
-                                </div>
-
-                                <div>
-
-                                    <h4 class="text-sm font-semibold text-slate-900">
-                                        Project Requirements
-                                    </h4>
-
-                                    <p class="text-sm text-slate-500 mt-1">
-                                        New requirements have been added to the project.
-                                    </p>
-
-                                    <p class="text-xs text-slate-400 mt-2">
-                                        Yesterday
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- Announcement -->
-                        <div>
-
-                            <div class="flex gap-3">
-
-                                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
-                                    🎓
-                                </div>
-
-                                <div>
-
-                                    <h4 class="text-sm font-semibold text-slate-900">
-                                        School Activity
-                                    </h4>
-
-                                    <p class="text-sm text-slate-500 mt-1">
-                                        Don't forget about the upcoming school activity.
-                                    </p>
-
-                                    <p class="text-xs text-slate-400 mt-2">
-                                        2 days ago
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        </div>
+                        @endforelse
 
                     </div>
 
@@ -353,17 +326,31 @@
                         </div>
 
                         <h4 class="font-semibold text-slate-900">
-                            View My Tasks
+                            @if(auth()->user()->isStudent())
+                                View My Tasks
+                            @elseif(auth()->user()->isTeacher())
+                                Manage My Tasks
+                            @else
+                                Manage Tasks
+                            @endif
                         </h4>
 
                         <p class="text-sm text-slate-500 mt-1">
-                            Check assignments and projects
+                            @if(auth()->user()->isStudent())
+                                Check assignments and projects
+                            @elseif(auth()->user()->isTeacher())
+                                Manage your assignments and projects
+                            @else
+                                Manage system tasks
+                            @endif
                         </p>
 
                     </a>
 
 
-                    <a href="#"
+                    
+
+                    <a href="{{ route('calendar.index') }}"
                        class="bg-white border border-slate-200 rounded-2xl p-5 hover:border-blue-400 hover:shadow-sm transition">
 
                         <div class="text-2xl mb-3">

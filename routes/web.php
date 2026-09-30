@@ -4,7 +4,10 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::middleware('auth')->group(function () {
 
@@ -88,3 +91,14 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
+    
+Route::get('/notifications', [NotificationController::class, 'index'])
+    ->name('notifications.index');
+
+Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])
+    ->name('notifications.read');
+
+// ----------------------- Calendar -----------------------
+Route::get('/calendar', [CalendarController::class, 'index'])
+    ->middleware('auth')
+    ->name('calendar.index');

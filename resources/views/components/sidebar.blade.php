@@ -51,7 +51,7 @@
 
 
             <!-- Calendar -->
-            <a href="#"
+            <a href="{{ route('calendar.index') }}"
                class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
 
                 <i data-lucide="calendar-days" class="w-5 h-5"></i>
@@ -64,7 +64,7 @@
 
 
             <!-- Notifications -->
-            <a href="#"
+            <a href="{{ route('notifications.index') }}"
                class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
 
                 <i data-lucide="bell" class="w-5 h-5"></i>

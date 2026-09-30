@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Notifications\TaskAssignedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -55,9 +56,21 @@ class TaskController extends Controller
             'created_by' => auth()->id(),
         ]);
         if ($request->filled('students')) {
+
             $task->students()->attach($request->students, [
                 'status' => 'Pending',
             ]);
+
+            foreach ($request->students as $studentId) {
+
+                $student = \App\Models\User::find($studentId);
+
+                if ($student) {
+                    $student->notify(
+                        new TaskAssignedNotification($task)
+                    );
+                }
+            }
         }
 
         return redirect()
