@@ -16,7 +16,7 @@ class AnnouncementPolicy
     }
 
     /**
-     * Determine whether the user can view an announcement.
+     * Determine whether the user can view the announcement.
      */
     public function view(User $user, Announcement $announcement): bool
     {
@@ -32,18 +32,34 @@ class AnnouncementPolicy
     }
 
     /**
-     * Determine whether the user can update an announcement.
+     * Determine whether the user can update the announcement.
      */
     public function update(User $user, Announcement $announcement): bool
     {
-        return $user->isTeacher() || $user->isAdmin();
+        return $user->isAdmin();
     }
 
     /**
-     * Determine whether the user can delete an announcement.
+     * Determine whether the user can delete the announcement.
      */
     public function delete(User $user, Announcement $announcement): bool
     {
-        return $user->isTeacher() || $user->isAdmin();
+        return $user->isAdmin();
+    }
+
+    /**
+     * Determine whether the user can restore the announcement.
+     */
+    public function restore(User $user, Announcement $announcement): bool
+    {
+        return $user->isAdmin();
+    }
+
+    /**
+     * Determine whether the user can permanently delete the announcement.
+     */
+    public function forceDelete(User $user, Announcement $announcement): bool
+    {
+        return $user->isAdmin();
     }
 }

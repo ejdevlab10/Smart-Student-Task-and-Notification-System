@@ -17,7 +17,7 @@
             </h1>
 
             <p class="mt-2 text-slate-500">
-                View your latest task assignments and reminders.
+                View your latest task assignments, reminders and announcements.
             </p>
 
         </div>
@@ -37,8 +37,15 @@
 
                             <div class="w-11 h-11 rounded-xl bg-blue-100
                                 flex items-center justify-center">
-                                🔔
+
+                                @if(!empty($notification->data['announcement_id']))
+                                    📢
+                                @else
+                                    🔔
+                                @endif
+
                             </div>
+
 
                             <div>
 
@@ -46,9 +53,20 @@
                                     {{ $notification->data['title'] ?? 'Notification' }}
                                 </h3>
 
+
                                 <p class="text-sm text-slate-600 mt-1">
                                     {{ $notification->data['message'] ?? '' }}
                                 </p>
+
+
+                                @if(isset($notification->data['category']))
+
+                                    <span class="inline-flex mt-2 px-2 py-1 rounded-full text-xs bg-slate-100 text-slate-600">
+                                        {{ $notification->data['category'] }}
+                                    </span>
+
+                                @endif
+
 
                                 @if(isset($notification->data['due_date']))
 
@@ -57,6 +75,7 @@
                                     </p>
 
                                 @endif
+
 
                                 <p class="text-xs text-slate-400 mt-2">
                                     {{ $notification->created_at->diffForHumans() }}
@@ -70,9 +89,11 @@
                         {{-- Notification Action --}}
                         <div>
 
-                            @if(!empty($notification->data['task_id']))
+                            @if(
+                                !empty($notification->data['task_id']) ||
+                                !empty($notification->data['announcement_id'])
+                            )
 
-                                {{-- Task Notification --}}
                                 <form
                                     action="{{ route('notifications.read', $notification->id) }}"
                                     method="POST"
@@ -85,14 +106,13 @@
                                         type="submit"
                                         class="text-sm text-blue-600 hover:text-blue-700 font-medium"
                                     >
-                                        View Task
+                                        View
                                     </button>
 
                                 </form>
 
                             @else
 
-                                {{-- Notification Without Task --}}
                                 @if(!$notification->read_at)
 
                                     <form
