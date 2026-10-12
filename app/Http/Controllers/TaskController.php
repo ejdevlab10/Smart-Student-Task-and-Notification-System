@@ -13,13 +13,31 @@ class TaskController extends Controller
     {
         Gate::authorize('viewAny', Task::class);
 
-        if (auth()->user()->isStudent()) {
-            $tasks = auth()->user()
-                ->assignedTasks()
+        $user = auth()->user();
+
+        if ($user->isStudent()) {
+
+            // Students see only tasks assigned to them.
+            $tasks = $user->assignedTasks()
                 ->orderBy('due_date')
                 ->get();
-        } else {
+
+        } elseif ($user->isTeacher()) {
+
+            // Teachers see only tasks they created.
+            $tasks = Task::where('created_by', $user->id)
+                ->orderBy('due_date')
+                ->get();
+
+        } elseif ($user->isAdmin()) {
+
+            // Administrators can see every task.
             $tasks = Task::orderBy('due_date')->get();
+
+        } else {
+
+            abort(403);
+
         }
 
         return view('tasks.index', compact('tasks'));

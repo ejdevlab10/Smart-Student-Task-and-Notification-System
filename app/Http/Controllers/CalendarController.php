@@ -13,35 +13,93 @@ class CalendarController extends Controller
     {
         Gate::authorize('viewAny', Task::class);
 
+        $user = auth()->user();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Calendar Month Navigation
+        |--------------------------------------------------------------------------
+        */
+
         $month = $request->input('month');
 
-        if ($month) {
+        if ($month && preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $month)) {
+
             try {
-                $currentMonth = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+                $currentMonth = Carbon::createFromFormat(
+                    '!Y-m',
+                    $month
+                )->startOfMonth();
+
             } catch (\Exception $e) {
                 $currentMonth = now()->startOfMonth();
             }
+
         } else {
             $currentMonth = now()->startOfMonth();
         }
 
-        if (auth()->user()->isStudent()) {
-            $tasks = auth()->user()
-                ->assignedTasks()
+        /*
+        |--------------------------------------------------------------------------
+        | Calendar Date Range
+        |--------------------------------------------------------------------------
+        */
+
+        $startDate = $currentMonth->copy()->startOfWeek();
+
+        $endDate = $currentMonth->copy()
+            ->endOfMonth()
+            ->endOfWeek();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Role-Based Task Visibility
+        |--------------------------------------------------------------------------
+        */
+
+        if ($user->isStudent()) {
+
+            // Students see only their assigned tasks.
+            $tasks = $user->assignedTasks()
                 ->whereBetween('due_date', [
-                    $currentMonth->copy()->startOfWeek(),
-                    $currentMonth->copy()->endOfMonth()->endOfWeek(),
+                    $startDate,
+                    $endDate
                 ])
                 ->orderBy('due_date')
                 ->get();
-        } else {
+
+        } elseif ($user->isTeacher()) {
+
+            // Teachers see only tasks they created.
+            $tasks = Task::where('created_by', $user->id)
+                ->whereBetween('due_date', [
+                    $startDate,
+                    $endDate
+                ])
+                ->orderBy('due_date')
+                ->get();
+
+        } elseif ($user->isAdmin()) {
+
+            // Administrators see all tasks.
             $tasks = Task::whereBetween('due_date', [
-                $currentMonth->copy()->startOfWeek(),
-                $currentMonth->copy()->endOfMonth()->endOfWeek(),
-            ])
-            ->orderBy('due_date')
-            ->get();
+                    $startDate,
+                    $endDate
+                ])
+                ->orderBy('due_date')
+                ->get();
+
+        } else {
+
+            abort(403);
+
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Return Calendar View
+        |--------------------------------------------------------------------------
+        */
 
         return view('calendar.index', compact(
             'tasks',

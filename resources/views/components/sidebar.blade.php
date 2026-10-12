@@ -119,12 +119,13 @@
 
 
             <!-- Calendar -->
-            <a href="#"
-               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
+            <a href="{{ route('calendar.index') }}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl
+            {{ request()->routeIs('calendar.index') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
 
                 <i data-lucide="calendar-days" class="w-5 h-5"></i>
 
-                <span>
+                <span class="font-medium">
                     Calendar
                 </span>
 
@@ -197,6 +198,19 @@
 
                 <span class="font-medium">
                     Assignments
+                </span>
+
+            </a>
+            
+            <!-- Calendar -->
+            <a href="{{ route('calendar.index') }}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl
+            {{ request()->routeIs('calendar.index') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
+
+                <i data-lucide="calendar-days" class="w-5 h-5"></i>
+
+                <span class="font-medium">
+                    Calendar
                 </span>
 
             </a>
