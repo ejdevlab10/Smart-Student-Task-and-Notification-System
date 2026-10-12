@@ -393,7 +393,7 @@
 
 
             {{-- Teacher Statistics --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
 
 
                 {{-- Tasks Created --}}
@@ -412,6 +412,24 @@
                     </p>
 
                 </div>
+
+
+                {{-- Active Assignments --}}
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+
+                        <p class="text-sm text-slate-500">
+                            Active Assignments
+                        </p>
+
+                        <p class="mt-2 text-3xl font-bold text-green-600">
+                            {{ $activeAssignments }}
+                        </p>
+
+                        <p class="text-xs text-slate-400 mt-2">
+                            Tasks with pending student work
+                        </p>
+
+                    </div>
 
 
                 {{-- Students Assigned --}}

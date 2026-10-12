@@ -5,9 +5,9 @@
 
 @section('content')
 
-<div class="min-h-screen bg-slate-100 p-8">
+<div class="min-h-screen bg-slate-100 p-6 lg:p-8">
 
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-6xl mx-auto">
 
         {{-- Success Message --}}
         @if(session('success'))
@@ -19,13 +19,12 @@
 
         {{-- Back Button --}}
         <div class="mb-6">
-            <a href="{{ route('tasks.index') }}"
-               class="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600">
-
+            <a
+                href="{{ route('tasks.index') }}"
+                class="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600"
+            >
                 <i data-lucide="arrow-left" class="w-4 h-4"></i>
-
                 Back to Tasks
-
             </a>
         </div>
 
@@ -33,24 +32,21 @@
         {{-- Task Card --}}
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
 
-            {{-- Header --}}
-            <div class="p-8 border-b border-slate-200">
+            {{-- Task Header --}}
+            <div class="p-6 lg:p-8 border-b border-slate-200">
 
-                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
 
                     <div>
 
-                        {{-- Task Type --}}
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 mb-3">
                             {{ $task->type }}
                         </span>
 
-                        {{-- Title --}}
                         <h1 class="text-3xl font-bold text-slate-900">
                             {{ $task->title }}
                         </h1>
 
-                        {{-- Subject --}}
                         <p class="text-slate-500 mt-2">
                             {{ $task->subject }}
                         </p>
@@ -58,7 +54,37 @@
                     </div>
 
 
-                    
+                    {{-- Task Status Badge --}}
+                    @if(auth()->user()->isStudent())
+
+                        @php
+                            $studentAssignment = $task->students->firstWhere('id', auth()->id());
+                        @endphp
+
+                        @if($studentAssignment && $studentAssignment->pivot->status === 'Completed')
+
+                            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-green-100 text-green-700 text-sm font-semibold">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                Completed
+                            </span>
+
+                        @else
+
+                            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-100 text-orange-700 text-sm font-semibold">
+                                <i data-lucide="clock" class="w-4 h-4"></i>
+                                Pending
+                            </span>
+
+                        @endif
+
+                    @else
+
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-sm font-semibold">
+                            <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+                            Task Details
+                        </span>
+
+                    @endif
 
                 </div>
 
@@ -66,9 +92,9 @@
 
 
             {{-- Task Information --}}
-            <div class="p-8">
+            <div class="p-6 lg:p-8">
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
 
                     {{-- Due Date --}}
@@ -76,10 +102,8 @@
 
                         <div class="flex items-center gap-3">
 
-                            <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-
+                            <div class="w-11 h-11 rounded-xl bg-blue-100 flex items-center justify-center">
                                 <i data-lucide="calendar" class="w-5 h-5 text-blue-600"></i>
-
                             </div>
 
                             <div>
@@ -88,9 +112,23 @@
                                     Due Date
                                 </p>
 
-                                <p class="font-semibold text-slate-800">
+                                <p class="font-semibold text-slate-800 mt-1">
                                     {{ $task->due_date->format('M d, Y h:i A') }}
                                 </p>
+
+                                @if($task->due_date->isPast())
+
+                                    <p class="text-xs text-red-600 mt-1">
+                                        Deadline has passed
+                                    </p>
+
+                                @else
+
+                                    <p class="text-xs text-slate-500 mt-1">
+                                        {{ $task->due_date->diffForHumans() }}
+                                    </p>
+
+                                @endif
 
                             </div>
 
@@ -99,21 +137,15 @@
                     </div>
 
 
-                    {{-- Your Status / Task Status --}}
+                    {{-- Student Status --}}
                     @if(auth()->user()->isStudent())
-
-                        @php
-                            $studentAssignment = $task->students->firstWhere('id', auth()->id());
-                        @endphp
 
                         <div class="bg-slate-50 rounded-xl p-5">
 
                             <div class="flex items-center gap-3">
 
-                                <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-
+                                <div class="w-11 h-11 rounded-xl bg-green-100 flex items-center justify-center">
                                     <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
-
                                 </div>
 
                                 <div>
@@ -124,14 +156,14 @@
 
                                     @if($studentAssignment && $studentAssignment->pivot->status === 'Completed')
 
-                                        <p class="font-semibold text-green-600">
+                                        <p class="font-semibold text-green-600 mt-1">
                                             Completed
                                         </p>
 
                                         @if($studentAssignment->pivot->completed_at)
 
-                                            <p class="text-sm text-slate-500 mt-1">
-                                                Completed
+                                            <p class="text-xs text-slate-500 mt-1">
+                                                Completed on
                                                 {{ $studentAssignment->pivot->completed_at->format('M d, Y h:i A') }}
                                             </p>
 
@@ -139,8 +171,12 @@
 
                                     @else
 
-                                        <p class="font-semibold text-orange-600">
+                                        <p class="font-semibold text-orange-600 mt-1">
                                             Pending
+                                        </p>
+
+                                        <p class="text-xs text-slate-500 mt-1">
+                                            Mark the task completed when you're finished.
                                         </p>
 
                                     @endif
@@ -157,20 +193,22 @@
 
                             <div class="flex items-center gap-3">
 
-                                <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-
-                                    <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
-
+                                <div class="w-11 h-11 rounded-xl bg-purple-100 flex items-center justify-center">
+                                    <i data-lucide="users" class="w-5 h-5 text-purple-600"></i>
                                 </div>
 
                                 <div>
 
                                     <p class="text-xs text-slate-500 uppercase tracking-wide">
-                                        Task Status
+                                        Assigned Students
                                     </p>
 
-                                    <p class="font-semibold text-slate-800">
-                                        {{ $task->status }}
+                                    <p class="font-semibold text-slate-800 mt-1">
+                                        {{ $task->students->count() }} students
+                                    </p>
+
+                                    <p class="text-xs text-slate-500 mt-1">
+                                        Students assigned to this task
                                     </p>
 
                                 </div>
@@ -191,7 +229,7 @@
                         Description
                     </h2>
 
-                    <div class="bg-slate-50 rounded-xl p-5 text-slate-700 leading-relaxed">
+                    <div class="bg-slate-50 rounded-xl p-5 text-slate-700 leading-relaxed whitespace-pre-line">
 
                         @if($task->description)
 
@@ -210,36 +248,214 @@
                 </div>
 
 
-                {{-- Student Progress --}}
+                {{-- ================================================= --}}
+                {{-- TEACHER / ADMIN STUDENT TRACKING                  --}}
+                {{-- ================================================= --}}
+
                 @if(!auth()->user()->isStudent())
 
+                    @php
+
+                        $totalStudents = $task->students->count();
+
+                        $completedStudents = $task->students
+                            ->filter(function ($student) {
+                                return $student->pivot->status === 'Completed';
+                            })
+                            ->count();
+
+                        $pendingStudents = $totalStudents - $completedStudents;
+
+                        $completionPercentage = $totalStudents > 0
+                            ? round(($completedStudents / $totalStudents) * 100)
+                            : 0;
+
+                    @endphp
+
+
+                    {{-- Student Completion Summary --}}
                     <div class="mt-8">
 
-                        <h2 class="text-lg font-semibold text-slate-900 mb-3">
-                            Student Progress
-                        </h2>
+                        <div class="mb-4">
 
-                        @if($task->students->count())
+                            <h2 class="text-xl font-bold text-slate-900">
+                                Student Progress
+                            </h2>
 
-                            <div class="border border-slate-200 rounded-xl overflow-hidden">
+                            <p class="text-sm text-slate-500 mt-1">
+                                Track the completion status of students assigned to this task.
+                            </p>
+
+                        </div>
+
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+
+
+                            {{-- Total Students --}}
+                            <div class="rounded-xl border border-slate-200 bg-white p-5">
+
+                                <div class="flex items-center justify-between">
+
+                                    <p class="text-sm text-slate-500">
+                                        Total Assigned
+                                    </p>
+
+                                    <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                        <i data-lucide="users" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+
+                                </div>
+
+                                <p class="text-3xl font-bold text-slate-900 mt-3">
+                                    {{ $totalStudents }}
+                                </p>
+
+                                <p class="text-xs text-slate-500 mt-1">
+                                    Students assigned
+                                </p>
+
+                            </div>
+
+
+                            {{-- Completed Students --}}
+                            <div class="rounded-xl border border-green-200 bg-green-50 p-5">
+
+                                <div class="flex items-center justify-between">
+
+                                    <p class="text-sm text-green-700">
+                                        Completed
+                                    </p>
+
+                                    <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                                        <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+                                    </div>
+
+                                </div>
+
+                                <p class="text-3xl font-bold text-green-700 mt-3">
+                                    {{ $completedStudents }}
+                                </p>
+
+                                <p class="text-xs text-green-700 mt-1">
+                                    Students finished
+                                </p>
+
+                            </div>
+
+
+                            {{-- Pending Students --}}
+                            <div class="rounded-xl border border-orange-200 bg-orange-50 p-5">
+
+                                <div class="flex items-center justify-between">
+
+                                    <p class="text-sm text-orange-700">
+                                        Pending
+                                    </p>
+
+                                    <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                                        <i data-lucide="clock" class="w-5 h-5 text-orange-600"></i>
+                                    </div>
+
+                                </div>
+
+                                <p class="text-3xl font-bold text-orange-700 mt-3">
+                                    {{ $pendingStudents }}
+                                </p>
+
+                                <p class="text-xs text-orange-700 mt-1">
+                                    Still pending
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        {{-- Completion Progress Bar --}}
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 mb-6">
+
+                            <div class="flex items-center justify-between gap-4 mb-3">
+
+                                <div>
+
+                                    <h3 class="font-semibold text-slate-800">
+                                        Overall Completion
+                                    </h3>
+
+                                    <p class="text-xs text-slate-500 mt-1">
+                                        Based on assigned students who marked this task completed.
+                                    </p>
+
+                                </div>
+
+                                <span class="text-xl font-bold text-blue-600">
+                                    {{ $completionPercentage }}%
+                                </span>
+
+                            </div>
+
+
+                            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+
+                                <div
+                                    class="bg-blue-600 h-3 rounded-full transition-all duration-500"
+                                    style="width: {{ $completionPercentage }}%"
+                                ></div>
+
+                            </div>
+
+
+                            <div class="flex justify-between text-xs text-slate-500 mt-2">
+
+                                <span>
+                                    {{ $completedStudents }} completed
+                                </span>
+
+                                <span>
+                                    {{ $totalStudents }} assigned
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        {{-- Student Tracking Table --}}
+                        <div class="border border-slate-200 rounded-xl overflow-hidden">
+
+                            <div class="p-5 bg-slate-50 border-b border-slate-200">
+
+                                <h3 class="font-semibold text-slate-800">
+                                    Student Completion Details
+                                </h3>
+
+                                <p class="text-sm text-slate-500 mt-1">
+                                    View each student's current status and completion date.
+                                </p>
+
+                            </div>
+
+
+                            @if($totalStudents > 0)
 
                                 <div class="overflow-x-auto">
 
                                     <table class="w-full">
 
-                                        <thead class="bg-slate-50">
+                                        <thead class="bg-white">
 
                                             <tr>
 
-                                                <th class="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                                                <th class="text-left px-5 py-4 text-xs font-semibold text-slate-500 uppercase">
                                                     Student
                                                 </th>
 
-                                                <th class="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                                                <th class="text-left px-5 py-4 text-xs font-semibold text-slate-500 uppercase">
                                                     Status
                                                 </th>
 
-                                                <th class="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">
+                                                <th class="text-left px-5 py-4 text-xs font-semibold text-slate-500 uppercase">
                                                     Completed At
                                                 </th>
 
@@ -247,12 +463,14 @@
 
                                         </thead>
 
+
                                         <tbody class="divide-y divide-slate-100">
 
                                             @foreach($task->students as $student)
 
-                                                <tr>
+                                                <tr class="hover:bg-slate-50 transition">
 
+                                                    {{-- Student Information --}}
                                                     <td class="px-5 py-4">
 
                                                         <p class="font-medium text-slate-800">
@@ -266,18 +484,27 @@
                                                     </td>
 
 
+                                                    {{-- Student Status --}}
                                                     <td class="px-5 py-4">
 
                                                         @if($student->pivot->status === 'Completed')
 
-                                                            <span class="inline-flex px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+
+                                                                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+
                                                                 Completed
+
                                                             </span>
 
                                                         @else
 
-                                                            <span class="inline-flex px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
+                                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-700">
+
+                                                                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+
                                                                 Pending
+
                                                             </span>
 
                                                         @endif
@@ -285,6 +512,7 @@
                                                     </td>
 
 
+                                                    {{-- Completion Date --}}
                                                     <td class="px-5 py-4 text-sm text-slate-500">
 
                                                         @if($student->pivot->completed_at)
@@ -293,7 +521,9 @@
 
                                                         @else
 
-                                                            —
+                                                            <span class="text-slate-400">
+                                                                Not completed
+                                                            </span>
 
                                                         @endif
 
@@ -309,15 +539,27 @@
 
                                 </div>
 
-                            </div>
+                            @else
 
-                        @else
+                                <div class="p-10 text-center">
 
-                            <div class="bg-slate-50 rounded-xl p-5 text-slate-500">
-                                No students are assigned to this task.
-                            </div>
+                                    <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+                                        <i data-lucide="users" class="w-6 h-6 text-slate-400"></i>
+                                    </div>
 
-                        @endif
+                                    <p class="font-medium text-slate-700">
+                                        No students assigned
+                                    </p>
+
+                                    <p class="text-sm text-slate-500 mt-1">
+                                        Assign students to this task to track their progress here.
+                                    </p>
+
+                                </div>
+
+                            @endif
+
+                        </div>
 
                     </div>
 
@@ -335,15 +577,18 @@
 
                             @if($studentAssignment && $studentAssignment->pivot->status === 'Pending')
 
-                                <form action="{{ route('tasks.complete', $task) }}"
-                                      method="POST">
+                                <form
+                                    action="{{ route('tasks.complete', $task) }}"
+                                    method="POST"
+                                >
 
                                     @csrf
-
                                     @method('PATCH')
 
-                                    <button type="submit"
-                                            class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-medium">
+                                    <button
+                                        type="submit"
+                                        class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-medium transition"
+                                    >
 
                                         <i data-lucide="check" class="w-4 h-4"></i>
 
@@ -373,8 +618,10 @@
 
                             @can('update', $task)
 
-                                <a href="{{ route('tasks.edit', $task) }}"
-                                   class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-medium">
+                                <a
+                                    href="{{ route('tasks.edit', $task) }}"
+                                    class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-medium transition"
+                                >
 
                                     <i data-lucide="edit" class="w-4 h-4"></i>
 
@@ -387,16 +634,19 @@
 
                             @can('delete', $task)
 
-                                <form action="{{ route('tasks.destroy', $task) }}"
-                                      method="POST"
-                                      onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                <form
+                                    action="{{ route('tasks.destroy', $task) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this task?');"
+                                >
 
                                     @csrf
-
                                     @method('DELETE')
 
-                                    <button type="submit"
-                                            class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl font-medium">
+                                    <button
+                                        type="submit"
+                                        class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl font-medium transition"
+                                    >
 
                                         <i data-lucide="trash-2" class="w-4 h-4"></i>
 

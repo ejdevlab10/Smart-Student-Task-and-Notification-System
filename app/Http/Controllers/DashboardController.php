@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\Announcement;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -35,7 +36,7 @@ class DashboardController extends Controller
                 ->wherePivot('status', 'Pending')
                 ->whereBetween('due_date', [
                     now(),
-                    now()->addDays(7)
+                    now()->copy()->addDays(7),
                 ])
                 ->count();
 
@@ -82,7 +83,6 @@ class DashboardController extends Controller
             ));
         }
 
-
         /*
         |--------------------------------------------------------------------------
         | Teacher Dashboard
@@ -92,33 +92,38 @@ class DashboardController extends Controller
 
             $teacherTasks = Task::where('created_by', $user->id);
 
+            // Number of tasks created by this teacher.
             $totalTasks = (clone $teacherTasks)->count();
 
-            $pendingTasks = (clone $teacherTasks)
-                ->where('status', 'Pending')
+            // Active assignments are tasks that have at least one
+            // assigned student whose pivot status is still Pending.
+            $activeAssignments = (clone $teacherTasks)
+                ->whereHas('students', function ($query) {
+                    $query->where('task_user.status', 'Pending');
+                })
                 ->count();
 
-            $completedTasks = (clone $teacherTasks)
-                ->where('status', 'Completed')
-                ->count();
-
-            $dueSoon = (clone $teacherTasks)
-                ->where('status', 'Pending')
-                ->whereBetween('due_date', [
-                    now(),
-                    now()->addDays(7)
-                ])
-                ->count();
-
-            $studentsAssigned = \DB::table('task_user')
+            // Count distinct students assigned to this teacher's tasks.
+            $studentsAssigned = DB::table('task_user')
                 ->join('tasks', 'tasks.id', '=', 'task_user.task_id')
                 ->where('tasks.created_by', $user->id)
-                ->distinct('task_user.user_id')
+                ->distinct()
                 ->count('task_user.user_id');
 
-            $upcomingTasks = (clone $teacherTasks)
-                ->where('status', 'Pending')
+            // Count teacher-created tasks with deadlines in the next 7 days.
+            $dueSoon = (clone $teacherTasks)
                 ->where('due_date', '>=', now())
+                ->where('due_date', '<=', now()->copy()->addDays(7))
+                ->whereHas('students', function ($query) {
+                    $query->where('task_user.status', 'Pending');
+                })
+                ->count();
+
+            $upcomingTasks = (clone $teacherTasks)
+                ->where('due_date', '>=', now())
+                ->whereHas('students', function ($query) {
+                    $query->where('task_user.status', 'Pending');
+                })
                 ->orderBy('due_date')
                 ->take(5)
                 ->get();
@@ -128,6 +133,8 @@ class DashboardController extends Controller
                 ->take(5)
                 ->get();
 
+            // Calculate progress using student assignment statuses,
+            // rather than the task's own status column.
             $completionStats = [];
 
             foreach ((clone $teacherTasks)->with('students')->get() as $task) {
@@ -135,7 +142,9 @@ class DashboardController extends Controller
                 $totalStudents = $task->students->count();
 
                 $completedStudents = $task->students
-                    ->where('pivot.status', 'Completed')
+                    ->filter(function ($student) {
+                        return $student->pivot->status === 'Completed';
+                    })
                     ->count();
 
                 $completionStats[] = [
@@ -155,17 +164,15 @@ class DashboardController extends Controller
 
             return view('dashboard', compact(
                 'totalTasks',
-                'pendingTasks',
-                'completedTasks',
-                'dueSoon',
+                'activeAssignments',
                 'studentsAssigned',
+                'dueSoon',
                 'upcomingTasks',
                 'recentTasks',
                 'completionStats',
                 'announcements'
             ));
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -179,17 +186,28 @@ class DashboardController extends Controller
 
         $totalTasks = Task::count();
 
-        $pendingTasks = Task::where('status', 'Pending')->count();
-
-        $completedTasks = Task::where('status', 'Completed')->count();
-
         $totalAnnouncements = Announcement::count();
 
-        $dueSoon = Task::where('status', 'Pending')
-            ->whereBetween('due_date', [
-                now(),
-                now()->addDays(7)
-            ])
+        // System-wide task assignment statistics.
+        $totalAssignments = DB::table('task_user')->count();
+
+        $completedAssignments = DB::table('task_user')
+            ->where('status', 'Completed')
+            ->count();
+
+        $pendingAssignments = DB::table('task_user')
+            ->where('status', 'Pending')
+            ->count();
+
+        // Keep the existing Blade variable names for compatibility.
+        $pendingTasks = $pendingAssignments;
+        $completedTasks = $completedAssignments;
+
+        $dueSoon = Task::where('due_date', '>=', now())
+            ->where('due_date', '<=', now()->copy()->addDays(7))
+            ->whereHas('students', function ($query) {
+                $query->where('task_user.status', 'Pending');
+            })
             ->count();
 
         $recentTasks = Task::with('creator')
@@ -202,8 +220,8 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $systemProgress = $totalTasks > 0
-            ? round(($completedTasks / $totalTasks) * 100)
+        $systemProgress = $totalAssignments > 0
+            ? round(($completedAssignments / $totalAssignments) * 100)
             : 0;
 
         return view('dashboard', compact(
