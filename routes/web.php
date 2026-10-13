@@ -7,6 +7,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -75,6 +76,18 @@ Route::middleware('auth')->group(function () {
 
         Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])
             ->name('tasks.destroy');
+
+        // ========================
+        // TEACHER MANAGEMENT
+        // Admin Only
+        // ========================
+
+        Route::middleware('role:admin')->group(function () {
+
+            Route::get('/admin/teachers', [TeacherController::class, 'index'])
+                ->name('admin.teachers.index');
+
+        });
             
         
     });
