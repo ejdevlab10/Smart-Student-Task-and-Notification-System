@@ -9,7 +9,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\ClassController;
 
 Route::middleware('auth')->group(function () {
 
@@ -101,6 +101,25 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin/students', [StudentController::class, 'index'])
             ->name('admin.students.index');
+    });
+
+
+    // ========================
+    // CLASS MANAGEMENT
+    // Admin Only
+    // ========================
+
+    Route::middleware('role:admin')->group(function () {
+
+        Route::get('/admin/classes', [ClassController::class, 'index'])
+            ->name('admin.classes.index');
+
+        Route::get('/admin/classes/create', [ClassController::class, 'create'])
+            ->name('admin.classes.create');
+
+        Route::post('/admin/classes', [ClassController::class, 'store'])
+            ->name('admin.classes.store');
+
     });
 });
 

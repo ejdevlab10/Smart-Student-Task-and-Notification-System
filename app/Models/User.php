@@ -9,6 +9,8 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\SchoolClass;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -75,5 +77,26 @@ class User extends Authenticatable
             ->using(TaskUser::class)
             ->withPivot('status', 'completed_at')
             ->withTimestamps();
+    }
+    
+    /**
+     * Classes taught by this teacher.
+     */
+    public function taughtClasses(): HasMany
+    {
+        return $this->hasMany(SchoolClass::class, 'teacher_id');
+    }
+
+    /**
+     * Classes this student belongs to.
+     */
+    public function schoolClasses(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            SchoolClass::class,
+            'class_student',
+            'student_id',
+            'school_class_id'
+        )->withTimestamps();
     }
 }
