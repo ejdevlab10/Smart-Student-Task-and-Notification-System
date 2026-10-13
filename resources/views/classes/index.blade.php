@@ -155,6 +155,7 @@
                         <th class="px-6 py-4 font-semibold">Academic Year</th>
                         <th class="px-6 py-4 font-semibold">Assigned Teacher</th>
                         <th class="px-6 py-4 font-semibold">Students</th>
+                        <th class="px-6 py-4 font-semibold">Actions</th>
 
                     </tr>
 
@@ -247,6 +248,32 @@
                                 </span>
 
                             </td>
+
+                            <td class="px-6 py-4 text-right">
+                                <div class="inline-flex items-center gap-2">
+                                    <a
+                                        href="{{ route('admin.classes.show', $schoolClass) }}"
+                                        class="inline-flex items-center gap-1 rounded-lg border
+                                            border-blue-200 px-3 py-2 text-sm font-medium
+                                            text-blue-600 hover:bg-blue-50"
+                                    >
+                                        <i data-lucide="users" class="w-4 h-4"></i>
+                                        Students
+                                    </a>
+
+                                    <a
+                                        href="{{ route('admin.classes.edit', $schoolClass) }}"
+                                        class="inline-flex items-center gap-1 rounded-lg border
+                                            border-indigo-200 px-3 py-2 text-sm font-medium
+                                            text-indigo-600 hover:bg-indigo-50"
+                                    >
+                                        <i data-lucide="pencil" class="w-4 h-4"></i>
+                                        Edit
+                                    </a>
+                                </div>
+                            </td>
+
+                            
 
                         </tr>
 

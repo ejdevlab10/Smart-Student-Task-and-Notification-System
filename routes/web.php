@@ -110,16 +110,36 @@ Route::middleware('auth')->group(function () {
     // ========================
 
     Route::middleware('role:admin')->group(function () {
-
-        Route::get('/admin/classes', [ClassController::class, 'index'])
+    // Class directory
+    Route::get('/admin/classes', [ClassController::class, 'index'])
             ->name('admin.classes.index');
 
+        // Create class
         Route::get('/admin/classes/create', [ClassController::class, 'create'])
             ->name('admin.classes.create');
 
         Route::post('/admin/classes', [ClassController::class, 'store'])
             ->name('admin.classes.store');
 
+        // Edit class
+        Route::get('/admin/classes/{class}/edit', [ClassController::class, 'edit'])
+            ->name('admin.classes.edit');
+
+        // Update class
+        Route::put('/admin/classes/{class}', [ClassController::class, 'update'])
+            ->name('admin.classes.update');
+
+        // View class details and enrolled students
+        Route::get('/admin/classes/{class}', [ClassController::class, 'show'])
+            ->name('admin.classes.show');
+
+        // Enroll a student
+        Route::post('/admin/classes/{class}/students', [ClassController::class, 'enroll'])
+            ->name('admin.classes.enroll');
+
+        // Remove a student
+        Route::delete('/admin/classes/{class}/students/{student}', [ClassController::class, 'removeStudent'])
+            ->name('admin.classes.students.remove');
     });
 });
 
