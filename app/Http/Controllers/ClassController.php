@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\SchoolClass;
+use App\Models\Task;
 use App\Models\User;
+use App\Notifications\TaskAssignedNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClassController extends Controller
 {
@@ -29,10 +32,7 @@ class ClassController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('classes.index', compact(
-            'classes',
-            'search'
-        ));
+        return view('classes.index', compact('classes', 'search'));
     }
 
     /**
@@ -72,12 +72,11 @@ class ClassController extends Controller
             ],
         ]);
 
-        // Automatically generate the academic year.
         $currentYear = now()->year;
 
-        $validated['academic_year'] = $currentYear . '-' . ($currentYear + 1);
+        $validated['academic_year'] =
+            $currentYear . '-' . ($currentYear + 1);
 
-        // Save the class with the automatically generated academic year.
         SchoolClass::create($validated);
 
         return redirect()
@@ -104,9 +103,7 @@ class ClassController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-
             'section' => ['nullable', 'string', 'max:100'],
-
             'teacher_id' => [
                 'nullable',
                 'integer',
@@ -124,7 +121,6 @@ class ClassController extends Controller
             ],
         ]);
 
-        // Update the class without changing its academic year.
         $class->update($validated);
 
         return redirect()
@@ -132,10 +128,9 @@ class ClassController extends Controller
             ->with('success', 'Class updated successfully.');
     }
 
-
     /**
-    * Show a class and its enrolled students.
-    */
+     * Show a class and its enrolled students.
+     */
     public function show(SchoolClass $class)
     {
         $class->load('teacher');
@@ -155,7 +150,7 @@ class ClassController extends Controller
     }
 
     /**
-     * Enroll a student in a class.
+     * Enroll a student in a class and assign existing class tasks.
      */
     public function enroll(Request $request, SchoolClass $class)
     {
@@ -179,15 +174,50 @@ class ClassController extends Controller
             ]);
         }
 
-        $class->students()->attach($student->id);
+        DB::transaction(function () use ($class, $student) {
+            // Enroll the student in the class.
+            $class->students()->attach($student->id);
+
+            // Find tasks associated with this class.
+            $tasks = Task::where('school_class_id', $class->id)->get();
+
+            foreach ($tasks as $task) {
+                // Do not duplicate an existing assignment.
+                $alreadyAssigned = $task->students()
+                    ->where('users.id', $student->id)
+                    ->exists();
+
+                if ($alreadyAssigned) {
+                    // Preserve the student's existing status and progress.
+                    continue;
+                }
+
+                // Assign the existing class task to the new student.
+                $task->students()->attach($student->id, [
+                    'status' => 'Pending',
+                    'completed_at' => null,
+                ]);
+
+                // Notify the student about the newly assigned task.
+                $student->notify(
+                    new TaskAssignedNotification($task)
+                );
+            }
+        });
 
         return redirect()
             ->route('admin.classes.show', $class)
-            ->with('success', 'Student enrolled successfully.');
+            ->with(
+                'success',
+                'Student enrolled successfully. Existing class tasks have been assigned and notifications sent.'
+            );
     }
 
     /**
      * Remove a student from a class.
+     *
+     * Existing task assignments are preserved because the same tasks
+     * may also have been assigned to the student individually.
      */
     public function removeStudent(SchoolClass $class, User $student)
     {
@@ -205,8 +235,9 @@ class ClassController extends Controller
 
         return redirect()
             ->route('admin.classes.show', $class)
-            ->with('success', 'Student removed from the class.');
+            ->with(
+                'success',
+                'Student removed from the class. Existing task assignments and completion records have been preserved.'
+            );
     }
-        
-
 }

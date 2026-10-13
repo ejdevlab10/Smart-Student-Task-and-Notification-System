@@ -2,56 +2,49 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Task;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\TaskUser;
+use App\Models\SchoolClass;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\SchoolClass;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'student_id',
+        'employee_id',
+        'profile_picture',
         'email',
         'password',
         'role',
+        'is_approved',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_approved' => 'boolean',
         ];
-        
     }
+
     public function isStudent(): bool
     {
         return $this->role === 'student';
@@ -61,24 +54,30 @@ class User extends Authenticatable
     {
         return $this->role === 'teacher';
     }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
 
+    public function isApproved(): bool
+    {
+        return (bool) $this->is_approved;
+    }
 
     public function createdTasks(): HasMany
     {
         return $this->hasMany(Task::class, 'created_by');
     }
-    public function assignedTasks()
+
+    public function assignedTasks(): BelongsToMany
     {
         return $this->belongsToMany(Task::class, 'task_user')
             ->using(TaskUser::class)
             ->withPivot('status', 'completed_at')
             ->withTimestamps();
     }
-    
+
     /**
      * Classes taught by this teacher.
      */

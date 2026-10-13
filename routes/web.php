@@ -10,6 +10,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClassController;
+use App\Http\Controllers\RegistrationController;
 
 Route::middleware('auth')->group(function () {
 
@@ -144,6 +145,21 @@ Route::middleware('auth')->group(function () {
 });
 
 
+// ------------------------ REGISTRATION ------------------------
+
+Route::get('/register', [RegistrationController::class, 'index'])
+    ->name('register');
+
+Route::get('/register/{role}', [RegistrationController::class, 'create'])
+    ->whereIn('role', ['student', 'teacher'])
+    ->name('register.create');
+
+Route::post('/register/{role}', [RegistrationController::class, 'store'])
+    ->whereIn('role', ['student', 'teacher'])
+    ->name('register.store');
+
+
+    
 // ------------------------ AUTH ------------------------
 
 Route::get('/login', [AuthController::class, 'showLogin'])

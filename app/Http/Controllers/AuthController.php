@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -17,19 +15,44 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+            'login' => ['required', 'string'],
+            'password' => ['required', 'string'],
         ]);
 
-        if (Auth::attempt($credentials)) {
+        $login = trim($credentials['login']);
+
+        // Allow login using email or student ID.
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL)
+            ? 'email'
+            : 'student_id';
+
+        $authCredentials = [
+            $field => $login,
+            'password' => $credentials['password'],
+        ];
+
+        // Prevent unapproved teachers from logging in.
+        $user = \App\Models\User::where($field, $login)->first();
+
+        if ($user && $user->role === 'teacher' && !$user->is_approved) {
+            return back()
+                ->withErrors([
+                    'login' => 'Your teacher account is awaiting administrator approval.',
+                ])
+                ->onlyInput('login');
+        }
+
+        if (Auth::attempt($authCredentials)) {
             $request->session()->regenerate();
 
             return redirect()->intended(route('dashboard'));
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials are incorrect.',
-        ])->onlyInput('email');
+        return back()
+            ->withErrors([
+                'login' => 'The provided credentials are incorrect.',
+            ])
+            ->onlyInput('login');
     }
 
     public function logout(Request $request)
