@@ -6,6 +6,7 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -74,11 +75,20 @@ Route::middleware('auth')->group(function () {
 
         Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])
             ->name('tasks.destroy');
+            
+        
     });
 
 
     // Announcements
     Route::resource('announcements', AnnouncementController::class);
+
+
+    // Student Management - Admin Only
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/admin/students', [StudentController::class, 'index'])
+            ->name('admin.students.index');
+    });
 });
 
 

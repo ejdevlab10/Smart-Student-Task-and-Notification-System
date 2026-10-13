@@ -101,9 +101,12 @@
         {{-- ADMIN NAVIGATION --}}
         @if(auth()->user()->role === 'admin')
 
-            {{-- Students (placeholder) --}}
-            <a href="#"
-               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
+            {{-- Students --}}
+            <a href="{{ route('admin.students.index') }}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl
+            {{ request()->routeIs('admin.students.*')
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-800' }}">
 
                 <i data-lucide="users" class="w-5 h-5"></i>
                 <span class="font-medium">Students</span>
