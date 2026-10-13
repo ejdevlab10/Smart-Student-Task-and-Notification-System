@@ -6,6 +6,9 @@ use App\Models\Task;
 use App\Notifications\TaskAssignedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use App\Models\SchoolClass;
+use App\Models\User;
+use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
@@ -47,7 +50,19 @@ class TaskController extends Controller
     {
         Gate::authorize('create', Task::class);
 
-        return view('tasks.create');
+        $user = auth()->user();
+
+        // Teachers can assign tasks only to classes assigned to them.
+        $classes = SchoolClass::where('teacher_id', $user->id)
+            ->orderBy('name')
+            ->get();
+
+        // Preserve the existing option to assign tasks to individual students.
+        $students = User::where('role', 'student')
+            ->orderBy('name')
+            ->get();
+
+        return view('tasks.create', compact('classes', 'students'));
     }
 
     public function store(Request $request)
@@ -56,14 +71,32 @@ class TaskController extends Controller
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+
             'subject' => ['required', 'string', 'max:255'],
+
             'type' => ['required', 'in:Assignment,Project,Quiz,Exam'],
+
             'description' => ['nullable', 'string'],
+
             'due_date' => ['required', 'date'],
-            'students' => 'nullable|array',
-            'students.*' => 'exists:users,id',  
+
+            'class_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('school_classes', 'id')
+                    ->where('teacher_id', auth()->id()),
+            ],
+
+            'students' => ['nullable', 'array'],
+
+            'students.*' => [
+                'integer',
+                Rule::exists('users', 'id')
+                    ->where('role', 'student'),
+            ],
         ]);
 
+        // Create the task.
         $task = Task::create([
             'title' => $validated['title'],
             'subject' => $validated['subject'],
@@ -72,16 +105,40 @@ class TaskController extends Controller
             'due_date' => $validated['due_date'],
             'status' => 'Pending',
             'created_by' => auth()->id(),
+            'school_class_id' => $validated['class_id'] ?? null,
         ]);
-        if ($request->filled('students')) {
 
-            $task->students()->attach($request->students, [
-                'status' => 'Pending',
-            ]);
+        // Start with any individually selected students.
+        $studentIds = collect($validated['students'] ?? []);
 
-            foreach ($request->students as $studentId) {
+        // Add everyone enrolled in the selected class.
+        if (!empty($validated['class_id'])) {
+            $class = SchoolClass::with('students')
+                ->findOrFail($validated['class_id']);
 
-                $student = \App\Models\User::find($studentId);
+            $classStudentIds = $class->students->pluck('id');
+
+            $studentIds = $studentIds->merge($classStudentIds);
+        }
+
+        // Remove duplicate student IDs.
+        $studentIds = $studentIds->unique()->values();
+
+        // Assign the task and send notifications.
+        if ($studentIds->isNotEmpty()) {
+            $assignments = [];
+
+            foreach ($studentIds as $studentId) {
+                $assignments[$studentId] = [
+                    'status' => 'Pending',
+                    'completed_at' => null,
+                ];
+            }
+
+            $task->students()->attach($assignments);
+
+            foreach ($studentIds as $studentId) {
+                $student = User::find($studentId);
 
                 if ($student) {
                     $student->notify(
@@ -93,7 +150,7 @@ class TaskController extends Controller
 
         return redirect()
             ->route('tasks.index')
-            ->with('success', 'Task created successfully!');
+            ->with('success', 'Task created and assigned successfully!');
     }
 
     public function show(Task $task)

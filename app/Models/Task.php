@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Task extends Model
 {
@@ -16,6 +16,7 @@ class Task extends Model
         'due_date',
         'status',
         'created_by',
+        'school_class_id',
     ];
 
     protected $casts = [
@@ -26,9 +27,18 @@ class Task extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-    public function students()
+
+    public function schoolClass(): BelongsTo
     {
-        return $this->belongsToMany(User::class, 'task_user')
+        return $this->belongsTo(SchoolClass::class, 'school_class_id');
+    }
+
+    public function students(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            'task_user'
+        )
             ->using(TaskUser::class)
             ->withPivot('status', 'completed_at')
             ->withTimestamps();

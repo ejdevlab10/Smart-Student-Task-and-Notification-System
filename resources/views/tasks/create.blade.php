@@ -1,251 +1,263 @@
 @extends('layouts.app')
 
-@section('title', 'Create Task')
-
-@section('page-heading', 'Create Academic Task')
-
 @section('content')
-
-<div class="min-h-screen bg-slate-100 p-8">
-
-    <div class="max-w-3xl mx-auto">
-
-        <!-- Header -->
-        <div class="mb-8">
-
-            <a href="{{ route('tasks.index') }}"
-               class="text-sm text-blue-600 hover:text-blue-700">
-
-                ← Back to Tasks
-
-            </a>
-
-            <h1 class="text-3xl font-bold text-slate-900 mt-4">
-                Create Academic Task
-            </h1>
-
-            <p class="text-slate-500 mt-1">
-                Add an assignment, project, quiz, or exam.
-            </p>
-
-        </div>
-
-
-        <!-- Form -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
-
-            <form action="{{ route('tasks.store') }}" method="POST">
-
-                @csrf
-
-
-                <!-- Title -->
-                <div class="mb-6">
-
-                    <label for="title"
-                           class="block text-sm font-medium text-slate-700 mb-2">
-
-                        Task Title
-
-                    </label>
-
-                    <input
-                        type="text"
-                        id="title"
-                        name="title"
-                        value="{{ old('title') }}"
-                        placeholder="e.g. Database Activity"
-                        class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-
-                    @error('title')
-                        <p class="text-sm text-red-600 mt-2">
-                            {{ $message }}
-                        </p>
-                    @enderror
-
-                </div>
-
-
-                <!-- Subject -->
-                <div class="mb-6">
-
-                    <label for="subject"
-                           class="block text-sm font-medium text-slate-700 mb-2">
-
-                        Subject
-
-                    </label>
-
-                    <input
-                        type="text"
-                        id="subject"
-                        name="subject"
-                        value="{{ old('subject') }}"
-                        placeholder="e.g. Database Management"
-                        class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-
-                    @error('subject')
-                        <p class="text-sm text-red-600 mt-2">
-                            {{ $message }}
-                        </p>
-                    @enderror
-
-                </div>
-
-
-                <!-- Type -->
-                <div class="mb-6">
-
-                    <label for="type"
-                           class="block text-sm font-medium text-slate-700 mb-2">
-
-                        Task Type
-
-                    </label>
-
-                    <select
-                        id="type"
-                        name="type"
-                        class="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-
-                        <option value="">Select task type</option>
-
-                        <option value="Assignment"
-                            {{ old('type') == 'Assignment' ? 'selected' : '' }}>
-                            Assignment
-                        </option>
-
-                        <option value="Project"
-                            {{ old('type') == 'Project' ? 'selected' : '' }}>
-                            Project
-                        </option>
-
-                        <option value="Quiz"
-                            {{ old('type') == 'Quiz' ? 'selected' : '' }}>
-                            Quiz
-                        </option>
-
-                        <option value="Exam"
-                            {{ old('type') == 'Exam' ? 'selected' : '' }}>
-                            Exam
-                        </option>
-
-                    </select>
-
-                    @error('type')
-                        <p class="text-sm text-red-600 mt-2">
-                            {{ $message }}
-                        </p>
-                    @enderror
-
-                </div>
-
-
-                <!-- Description -->
-                <div class="mb-6">
-
-                    <label for="description"
-                           class="block text-sm font-medium text-slate-700 mb-2">
-
-                        Description
-
-                    </label>
-
-                    <textarea
-                        id="description"
-                        name="description"
-                        rows="5"
-                        placeholder="Describe the task or instructions..."
-                        class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >{{ old('description') }}</textarea>
-
-                    @error('description')
-                        <p class="text-sm text-red-600 mt-2">
-                            {{ $message }}
-                        </p>
-                    @enderror
-
-                </div>
-
-
-                <!-- Due Date -->
-                <div class="mb-8">
-
-                    <label for="due_date"
-                           class="block text-sm font-medium text-slate-700 mb-2">
-
-                        Due Date
-
-                    </label>
-
-                    <input
-                        type="datetime-local"
-                        id="due_date"
-                        name="due_date"
-                        value="{{ old('due_date') }}"
-                        class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-
-                    @error('due_date')
-                        <p class="text-sm text-red-600 mt-2">
-                            {{ $message }}
-                        </p>
-                    @enderror
-
-                </div>
-                    <!-- student selection -->
-                <div class="mb-3">
-                    <label for="students" class="form-label">Assign Students</label>
-
-                    <select
-                        name="students[]"
-                        id="students"
-                        class="form-select"
-                        multiple
-                    >
-                        @foreach(\App\Models\User::where('role', 'student')->get() as $student)
-                            <option value="{{ $student->id }}">
-                                {{ $student->name }} ({{ $student->email }})
-                            </option>
-                        @endforeach
-                    </select>
-
-                    <small class="text-muted">
-                        Hold Ctrl (Windows) or Command (Mac) to select multiple students.
-                    </small>
-                </div>
-
-
-                <!-- Buttons -->
-                <div class="flex items-center justify-end gap-3">
-
-                    <a href="{{ route('tasks.index') }}"
-                       class="px-5 py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50">
-
-                        Cancel
-
-                    </a>
-
-                    <button
-                        type="submit"
-                        class="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700"
-                    >
-
-                        Create Task
-
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+    {{-- Page Header --}}
+    <div class="mb-8">
+        <a href="{{ route('tasks.index') }}"
+           class="text-sm text-blue-600 hover:text-blue-800">
+            &larr; Back to Tasks
+        </a>
+
+        <h1 class="text-3xl font-bold text-slate-800 mt-3">
+            Create New Task
+        </h1>
+
+        <p class="text-slate-500 mt-2">
+            Create an assignment, project, quiz, or exam and assign it to students or an entire class.
+        </p>
     </div>
 
-</div>
+    {{-- Validation Errors --}}
+    @if ($errors->any())
+        <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4">
+            <p class="font-semibold text-red-700 mb-2">
+                Please correct the following errors:
+            </p>
 
+            <ul class="list-disc list-inside text-sm text-red-600">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    {{-- Create Task Form --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+
+        <form action="{{ route('tasks.store') }}" method="POST">
+            @csrf
+
+            {{-- Task Title --}}
+            <div class="mb-6">
+                <label for="title"
+                       class="block text-sm font-medium text-slate-700 mb-2">
+                    Task Title <span class="text-red-500">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    name="title"
+                    id="title"
+                    value="{{ old('title') }}"
+                    required
+                    maxlength="255"
+                    placeholder="e.g. Chapter 5 Assignment"
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+
+                @error('title')
+                    <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Subject --}}
+            <div class="mb-6">
+                <label for="subject"
+                       class="block text-sm font-medium text-slate-700 mb-2">
+                    Subject <span class="text-red-500">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    name="subject"
+                    id="subject"
+                    value="{{ old('subject') }}"
+                    required
+                    maxlength="255"
+                    placeholder="e.g. General Calculus"
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+
+                @error('subject')
+                    <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Task Type --}}
+            <div class="mb-6">
+                <label for="type"
+                       class="block text-sm font-medium text-slate-700 mb-2">
+                    Task Type <span class="text-red-500">*</span>
+                </label>
+
+                <select
+                    name="type"
+                    id="type"
+                    required
+                    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                    <option value="">Select task type</option>
+
+                    @foreach (['Assignment', 'Project', 'Quiz', 'Exam'] as $type)
+                        <option
+                            value="{{ $type }}"
+                            {{ old('type') === $type ? 'selected' : '' }}
+                        >
+                            {{ $type }}
+                        </option>
+                    @endforeach
+                </select>
+
+                @error('type')
+                    <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Description --}}
+            <div class="mb-6">
+                <label for="description"
+                       class="block text-sm font-medium text-slate-700 mb-2">
+                    Description
+                </label>
+
+                <textarea
+                    name="description"
+                    id="description"
+                    rows="4"
+                    placeholder="Enter task instructions or additional details..."
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >{{ old('description') }}</textarea>
+
+                @error('description')
+                    <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Due Date --}}
+            <div class="mb-6">
+                <label for="due_date"
+                       class="block text-sm font-medium text-slate-700 mb-2">
+                    Due Date and Time <span class="text-red-500">*</span>
+                </label>
+
+                <input
+                    type="datetime-local"
+                    name="due_date"
+                    id="due_date"
+                    value="{{ old('due_date') }}"
+                    required
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+
+                @error('due_date')
+                    <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Class Selection --}}
+            <div class="mb-6">
+                <label for="class_id"
+                       class="block text-sm font-medium text-slate-700 mb-2">
+                    Assign to Class
+                </label>
+
+                <select
+                    name="class_id"
+                    id="class_id"
+                    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                    <option value="">
+                        No class selected — assign individually
+                    </option>
+
+                    @foreach ($classes as $class)
+                        <option
+                            value="{{ $class->id }}"
+                            {{ (string) old('class_id') === (string) $class->id ? 'selected' : '' }}
+                        >
+                            {{ $class->name }}
+                            @if ($class->section)
+                                — {{ $class->section }}
+                            @endif
+                        </option>
+                    @endforeach
+                </select>
+
+                @error('class_id')
+                    <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+                @enderror
+
+                <p class="text-sm text-slate-500 mt-2">
+                    Selecting a class assigns this task to all students enrolled in that class.
+                </p>
+
+                @if ($classes->isEmpty())
+                    <p class="text-sm text-amber-600 mt-2">
+                        You don't have any classes assigned to you yet.
+                        You can still assign tasks to individual students.
+                    </p>
+                @endif
+            </div>
+
+            {{-- Individual Student Selection --}}
+            <div class="mb-8">
+                <label for="students"
+                       class="block text-sm font-medium text-slate-700 mb-2">
+                    Assign to Individual Students
+                </label>
+
+                <select
+                    name="students[]"
+                    id="students"
+                    multiple
+                    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    size="6"
+                >
+                    @foreach ($students as $student)
+                        <option
+                            value="{{ $student->id }}"
+                            {{ in_array($student->id, old('students', [])) ? 'selected' : '' }}
+                        >
+                            {{ $student->name }} ({{ $student->email }})
+                        </option>
+                    @endforeach
+                </select>
+
+                <p class="text-sm text-slate-500 mt-2">
+                    Hold Ctrl (Windows) while clicking to select multiple students.
+                    Students already included through the selected class won't be assigned twice.
+                </p>
+
+                @error('students')
+                    <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+                @enderror
+
+                @error('students.*')
+                    <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Form Actions --}}
+            <div class="flex flex-col sm:flex-row gap-3 justify-end border-t border-slate-200 pt-6">
+                <a
+                    href="{{ route('tasks.index') }}"
+                    class="inline-flex justify-center items-center rounded-xl border border-slate-300 px-6 py-3 text-slate-700 font-medium hover:bg-slate-50 transition"
+                >
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="inline-flex justify-center items-center rounded-xl bg-blue-600 px-6 py-3 text-white font-semibold hover:bg-blue-700 transition"
+                >
+                    Create Task
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
 @endsection
