@@ -204,32 +204,47 @@
 
             {{-- Individual Student Selection --}}
             <div class="mb-8">
-                <label for="students"
-                       class="block text-sm font-medium text-slate-700 mb-2">
+                <label class="block text-sm font-medium text-slate-700 mb-2">
                     Assign to Individual Students
                 </label>
 
-                <select
-                    name="students[]"
-                    id="students"
-                    multiple
-                    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    size="6"
-                >
-                    @foreach ($students as $student)
-                        <option
-                            value="{{ $student->id }}"
-                            {{ in_array($student->id, old('students', [])) ? 'selected' : '' }}
-                        >
-                            {{ $student->name }} ({{ $student->email }})
-                        </option>
-                    @endforeach
-                </select>
-
-                <p class="text-sm text-slate-500 mt-2">
-                    Hold Ctrl (Windows) while clicking to select multiple students.
-                    Students already included through the selected class won't be assigned twice.
+                <p class="text-xs text-slate-500 mb-3">
+                    Select individual students in addition to the class, if needed.
+                    Students already included through the selected class will not be assigned twice.
                 </p>
+
+                <div class="max-h-64 overflow-y-auto rounded-xl border border-slate-200 divide-y divide-slate-100">
+
+                    @forelse ($students as $student)
+                        <label class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 cursor-pointer">
+
+                            <input
+                                type="checkbox"
+                                name="students[]"
+                                value="{{ $student->id }}"
+                                class="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                {{ in_array(
+                                    (string) $student->id,
+                                    array_map('strval', old('students', [])),
+                                    true
+                                ) ? 'checked' : '' }}
+                            >
+
+                            <span class="text-sm text-slate-700">
+                                {{ $student->name }}
+                                <span class="text-slate-400">
+                                    ({{ $student->email }})
+                                </span>
+                            </span>
+
+                        </label>
+                    @empty
+                        <p class="p-4 text-sm text-slate-500">
+                            No students are available.
+                        </p>
+                    @endforelse
+
+                </div>
 
                 @error('students')
                     <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
