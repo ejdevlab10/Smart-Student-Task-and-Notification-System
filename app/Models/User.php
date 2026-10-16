@@ -98,4 +98,8 @@ class User extends Authenticatable
             'school_class_id'
         )->withTimestamps();
     }
+    public function taskSubmissions(): HasMany
+    {
+        return $this->hasMany(TaskSubmission::class, 'student_id');
+    }
 }

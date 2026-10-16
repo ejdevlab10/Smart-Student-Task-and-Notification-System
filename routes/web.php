@@ -11,6 +11,7 @@ use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\TaskSubmissionController;
 
 Route::middleware('auth')->group(function () {
 
@@ -142,6 +143,27 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/classes/{class}/students/{student}', [ClassController::class, 'removeStudent'])
             ->name('admin.classes.students.remove');
     });
+    
+        // Task submission routes
+    Route::post('/tasks/{task}/submissions', [
+        TaskSubmissionController::class,
+        'store'
+    ])->name('tasks.submissions.store');
+
+    Route::get('/tasks/{task}/submissions', [
+        TaskSubmissionController::class,
+        'index'
+    ])->name('tasks.submissions.index');
+
+    Route::patch('/task-submissions/{submission}/review', [
+        TaskSubmissionController::class,
+        'review'
+    ])->name('task-submissions.review');
+
+    Route::get('/task-submissions/{submission}/download', [
+        TaskSubmissionController::class,
+        'download'
+    ])->name('task-submissions.download');
 });
 
 
