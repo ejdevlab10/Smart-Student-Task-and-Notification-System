@@ -98,14 +98,6 @@ class TaskSubmissionController extends Controller
                     ]
                 );
 
-                // Update the student's task progress.
-                $task->students()->updateExistingPivot(
-                    $user->id,
-                    [
-                        'status' => 'Completed',
-                        'completed_at' => now(),
-                    ]
-                );
             });
         } catch (\Throwable $exception) {
             // Clean up the new upload if database saving fails.
@@ -186,12 +178,23 @@ class TaskSubmissionController extends Controller
             ],
         ]);
 
-        $submission->update([
-            'grade' => $validated['grade'],
-            'feedback' => $validated['feedback'] ?? null,
-            'status' => 'Reviewed',
-            'reviewed_at' => now(),
-        ]);
+        DB::transaction(function () use ($submission, $validated) {
+            $submission->update([
+                'grade' => $validated['grade'],
+                'feedback' => $validated['feedback'] ?? null,
+                'status' => 'Reviewed',
+                'reviewed_at' => now(),
+            ]);
+
+            // Mark the student's task as completed after review.
+            $submission->task->students()->updateExistingPivot(
+                $submission->student_id,
+                [
+                    'status' => 'Completed',
+                    'completed_at' => now(),
+                ]
+            );
+        });
 
         return back()->with(
             'success',

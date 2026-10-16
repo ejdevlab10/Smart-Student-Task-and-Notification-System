@@ -10,7 +10,6 @@
 
     <div class="max-w-7xl mx-auto">
 
-
         {{-- ========================================================= --}}
         {{-- STUDENT DASHBOARD                                         --}}
         {{-- ========================================================= --}}
@@ -25,7 +24,7 @@
                 </p>
 
                 <h1 class="text-3xl font-bold text-slate-900">
-                    Welcome back, {{ auth()->user()->name }}! 👋
+                    Welcome back, {{ auth()->user()->name }}!
                 </h1>
 
                 <p class="mt-2 text-slate-500">
@@ -34,49 +33,39 @@
 
             </div>
 
-
             {{-- Student Statistics --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 mb-8">
 
                 <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
                     <p class="text-sm text-slate-500">Total Tasks</p>
-
                     <p class="mt-2 text-3xl font-bold text-slate-900">
                         {{ $totalTasks }}
                     </p>
                 </div>
 
-
                 <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
                     <p class="text-sm text-slate-500">Pending</p>
-
                     <p class="mt-2 text-3xl font-bold text-orange-600">
                         {{ $pendingTasks }}
                     </p>
                 </div>
 
-
                 <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
                     <p class="text-sm text-slate-500">Due Soon</p>
-
                     <p class="mt-2 text-3xl font-bold text-red-600">
                         {{ $dueSoon }}
                     </p>
                 </div>
 
-
                 <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
                     <p class="text-sm text-slate-500">Completed</p>
-
                     <p class="mt-2 text-3xl font-bold text-green-600">
                         {{ $completedTasks }}
                     </p>
                 </div>
 
-
                 <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
                     <p class="text-sm text-slate-500">Notifications</p>
-
                     <p class="mt-2 text-3xl font-bold text-blue-600">
                         {{ $unreadNotifications }}
                     </p>
@@ -84,10 +73,8 @@
 
             </div>
 
-
             {{-- Student Main Content --}}
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
 
                 {{-- Upcoming Tasks --}}
                 <section class="xl:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm">
@@ -95,7 +82,6 @@
                     <div class="p-6 border-b border-slate-200 flex items-center justify-between">
 
                         <div>
-
                             <h2 class="font-semibold text-slate-900">
                                 Upcoming Deadlines
                             </h2>
@@ -103,7 +89,6 @@
                             <p class="text-sm text-slate-500 mt-1">
                                 Your next tasks that need attention
                             </p>
-
                         </div>
 
                         <a
@@ -114,7 +99,6 @@
                         </a>
 
                     </div>
-
 
                     <div class="divide-y divide-slate-100">
 
@@ -128,7 +112,6 @@
                                 <div class="flex items-center justify-between gap-4">
 
                                     <div>
-
                                         <h3 class="font-medium text-slate-900">
                                             {{ $task->title }}
                                         </h3>
@@ -136,11 +119,9 @@
                                         <p class="text-sm text-slate-500 mt-1">
                                             {{ $task->subject }} · {{ $task->type }}
                                         </p>
-
                                     </div>
 
-
-                                    <div class="text-right">
+                                    <div class="text-right shrink-0">
 
                                         <p class="text-sm font-semibold text-orange-600">
                                             {{ $task->due_date->diffForHumans() }}
@@ -160,8 +141,12 @@
 
                             <div class="p-10 text-center">
 
-                                <div class="text-4xl mb-3">
-                                    🎉
+                                <div class="flex justify-center mb-3">
+                                    <i
+                                        data-lucide="check-circle"
+                                        class="w-10 h-10 text-slate-300"
+                                        aria-hidden="true"
+                                    ></i>
                                 </div>
 
                                 <p class="font-medium text-slate-700">
@@ -180,8 +165,7 @@
 
                 </section>
 
-
-                {{-- Progress --}}
+                {{-- Academic Progress --}}
                 <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
 
                     <h2 class="font-semibold text-slate-900">
@@ -191,7 +175,6 @@
                     <p class="text-sm text-slate-500 mt-1">
                         Your completed tasks
                     </p>
-
 
                     <div class="flex items-center justify-center py-8">
 
@@ -209,7 +192,6 @@
 
                     </div>
 
-
                     <div class="w-full bg-slate-100 rounded-full h-3">
 
                         <div
@@ -218,7 +200,6 @@
                         ></div>
 
                     </div>
-
 
                     <div class="flex justify-between text-xs text-slate-500 mt-3">
 
@@ -232,11 +213,11 @@
 
                     </div>
 
-
                     <a
                         href="{{ route('tasks.index') }}"
-                        class="block text-center mt-6 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+                        class="flex items-center justify-center gap-2 mt-6 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
                     >
+                        <i data-lucide="list-check" class="w-4 h-4" aria-hidden="true"></i>
                         View My Tasks
                     </a>
 
@@ -244,12 +225,10 @@
 
             </div>
 
-
             {{-- Student Lower Section --}}
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
 
-
-                {{-- Recent Completed --}}
+                {{-- Recently Completed --}}
                 <section class="bg-white rounded-2xl border border-slate-200 shadow-sm">
 
                     <div class="p-6 border-b border-slate-200">
@@ -264,15 +243,13 @@
 
                     </div>
 
-
                     <div class="divide-y divide-slate-100">
 
                         @forelse($recentCompletedTasks as $task)
 
-                            <div class="p-5 flex items-center justify-between">
+                            <div class="p-5 flex items-center justify-between gap-4">
 
                                 <div>
-
                                     <p class="font-medium text-slate-900">
                                         {{ $task->title }}
                                     </p>
@@ -280,11 +257,10 @@
                                     <p class="text-sm text-slate-500">
                                         {{ $task->subject }}
                                     </p>
-
                                 </div>
 
-
-                                <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 shrink-0">
+                                    <i data-lucide="check-circle" class="w-3.5 h-3.5" aria-hidden="true"></i>
                                     Completed
                                 </span>
 
@@ -292,8 +268,18 @@
 
                         @empty
 
-                            <div class="p-8 text-center text-sm text-slate-500">
-                                No completed tasks yet.
+                            <div class="p-8 text-center">
+
+                                <i
+                                    data-lucide="clipboard-list"
+                                    class="w-8 h-8 text-slate-300 mx-auto mb-2"
+                                    aria-hidden="true"
+                                ></i>
+
+                                <p class="text-sm text-slate-500">
+                                    No completed tasks yet.
+                                </p>
+
                             </div>
 
                         @endforelse
@@ -302,14 +288,12 @@
 
                 </section>
 
-
-                {{-- Announcements --}}
+                {{-- Student Announcements --}}
                 <section class="bg-white rounded-2xl border border-slate-200 shadow-sm">
 
-                    <div class="p-6 border-b border-slate-200 flex justify-between">
+                    <div class="p-6 border-b border-slate-200 flex justify-between items-center gap-4">
 
                         <div>
-
                             <h2 class="font-semibold text-slate-900">
                                 Latest Announcements
                             </h2>
@@ -317,18 +301,16 @@
                             <p class="text-sm text-slate-500 mt-1">
                                 Updates from your school
                             </p>
-
                         </div>
 
                         <a
                             href="{{ route('announcements.index') }}"
-                            class="text-sm text-blue-600"
+                            class="text-sm text-blue-600 hover:text-blue-700 font-medium shrink-0"
                         >
                             View all
                         </a>
 
                     </div>
-
 
                     <div class="divide-y divide-slate-100">
 
@@ -336,7 +318,7 @@
 
                             <a
                                 href="{{ route('announcements.show', $announcement) }}"
-                                class="block p-5 hover:bg-slate-50"
+                                class="block p-5 hover:bg-slate-50 transition"
                             >
 
                                 <p class="font-medium text-slate-900">
@@ -355,8 +337,18 @@
 
                         @empty
 
-                            <div class="p-8 text-center text-sm text-slate-500">
-                                No announcements yet.
+                            <div class="p-8 text-center">
+
+                                <i
+                                    data-lucide="megaphone"
+                                    class="w-8 h-8 text-slate-300 mx-auto mb-2"
+                                    aria-hidden="true"
+                                ></i>
+
+                                <p class="text-sm text-slate-500">
+                                    No announcements yet.
+                                </p>
+
                             </div>
 
                         @endforelse
@@ -366,7 +358,6 @@
                 </section>
 
             </div>
-
 
         {{-- ========================================================= --}}
         {{-- TEACHER DASHBOARD                                         --}}
@@ -382,7 +373,7 @@
                 </p>
 
                 <h1 class="text-3xl font-bold text-slate-900">
-                    Welcome back, {{ auth()->user()->name }}! 👋
+                    Welcome back, {{ auth()->user()->name }}!
                 </h1>
 
                 <p class="mt-2 text-slate-500">
@@ -391,12 +382,9 @@
 
             </div>
 
-
             {{-- Teacher Statistics --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
 
-
-                {{-- Tasks Created --}}
                 <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
 
                     <p class="text-sm text-slate-500">
@@ -413,26 +401,22 @@
 
                 </div>
 
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
 
-                {{-- Active Assignments --}}
-                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                    <p class="text-sm text-slate-500">
+                        Active Assignments
+                    </p>
 
-                        <p class="text-sm text-slate-500">
-                            Active Assignments
-                        </p>
+                    <p class="mt-2 text-3xl font-bold text-green-600">
+                        {{ $activeAssignments }}
+                    </p>
 
-                        <p class="mt-2 text-3xl font-bold text-green-600">
-                            {{ $activeAssignments }}
-                        </p>
+                    <p class="text-xs text-slate-400 mt-2">
+                        Tasks with pending student work
+                    </p>
 
-                        <p class="text-xs text-slate-400 mt-2">
-                            Tasks with pending student work
-                        </p>
+                </div>
 
-                    </div>
-
-
-                {{-- Students Assigned --}}
                 <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
 
                     <p class="text-sm text-slate-500">
@@ -449,8 +433,6 @@
 
                 </div>
 
-
-                {{-- Due Soon --}}
                 <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
 
                     <p class="text-sm text-slate-500">
@@ -469,18 +451,15 @@
 
             </div>
 
-
             {{-- Teacher Main Content --}}
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
 
                 {{-- Upcoming Assignments --}}
                 <section class="xl:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm">
 
-                    <div class="p-6 border-b border-slate-200 flex justify-between">
+                    <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
                         <div>
-
                             <h2 class="font-semibold text-slate-900">
                                 Upcoming Assignments
                             </h2>
@@ -488,19 +467,17 @@
                             <p class="text-sm text-slate-500 mt-1">
                                 Assignments you've created that are coming up
                             </p>
-
                         </div>
-
 
                         <a
                             href="{{ route('tasks.create') }}"
-                            class="px-3 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+                            class="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition shrink-0"
                         >
-                            + Create Task
+                            <i data-lucide="plus" class="w-4 h-4" aria-hidden="true"></i>
+                            Create Task
                         </a>
 
                     </div>
-
 
                     <div class="divide-y divide-slate-100">
 
@@ -514,7 +491,6 @@
                                 <div class="flex justify-between gap-4">
 
                                     <div>
-
                                         <h3 class="font-medium text-slate-900">
                                             {{ $task->title }}
                                         </h3>
@@ -522,11 +498,9 @@
                                         <p class="text-sm text-slate-500 mt-1">
                                             {{ $task->subject }} · {{ $task->type }}
                                         </p>
-
                                     </div>
 
-
-                                    <div class="text-right">
+                                    <div class="text-right shrink-0">
 
                                         <p class="text-sm font-semibold text-orange-600">
                                             {{ $task->due_date->diffForHumans() }}
@@ -546,9 +520,11 @@
 
                             <div class="p-10 text-center">
 
-                                <div class="text-4xl mb-3">
-                                    🎉
-                                </div>
+                                <i
+                                    data-lucide="calendar-check"
+                                    class="w-10 h-10 text-slate-300 mx-auto mb-3"
+                                    aria-hidden="true"
+                                ></i>
 
                                 <p class="font-medium text-slate-700">
                                     No upcoming assignments
@@ -566,8 +542,7 @@
 
                 </section>
 
-
-                {{-- Quick Actions --}}
+                {{-- Teacher Quick Actions --}}
                 <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
 
                     <h2 class="font-semibold text-slate-900">
@@ -578,53 +553,68 @@
                         Common teacher actions
                     </p>
 
-
                     <div class="space-y-3 mt-5">
 
                         <a
                             href="{{ route('tasks.create') }}"
-                            class="block p-4 rounded-xl bg-blue-50 hover:bg-blue-100 transition"
+                            class="flex items-center gap-3 p-4 rounded-xl bg-blue-50 hover:bg-blue-100 transition"
                         >
 
-                            <p class="font-medium text-blue-800">
-                                ➕ Create Task
-                            </p>
+                            <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-700 shrink-0">
+                                <i data-lucide="plus-circle" class="w-5 h-5" aria-hidden="true"></i>
+                            </div>
 
-                            <p class="text-xs text-blue-600 mt-1">
-                                Assign work to students
-                            </p>
+                            <div>
+                                <p class="font-medium text-blue-800">
+                                    Create Task
+                                </p>
+
+                                <p class="text-xs text-blue-600 mt-1">
+                                    Assign work to students
+                                </p>
+                            </div>
 
                         </a>
-
 
                         <a
                             href="{{ route('tasks.index') }}"
-                            class="block p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition"
+                            class="flex items-center gap-3 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition"
                         >
 
-                            <p class="font-medium text-slate-800">
-                                📚 Manage Tasks
-                            </p>
+                            <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white text-slate-600 shrink-0">
+                                <i data-lucide="book-open" class="w-5 h-5" aria-hidden="true"></i>
+                            </div>
 
-                            <p class="text-xs text-slate-500 mt-1">
-                                View and manage your assignments
-                            </p>
+                            <div>
+                                <p class="font-medium text-slate-800">
+                                    Manage Tasks
+                                </p>
+
+                                <p class="text-xs text-slate-500 mt-1">
+                                    View and manage your assignments
+                                </p>
+                            </div>
 
                         </a>
 
-
                         <a
                             href="{{ route('calendar.index') }}"
-                            class="block p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition"
+                            class="flex items-center gap-3 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition"
                         >
 
-                            <p class="font-medium text-slate-800">
-                                📅 Calendar
-                            </p>
+                            <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white text-slate-600 shrink-0">
+                                <i data-lucide="calendar-days" class="w-5 h-5" aria-hidden="true"></i>
+                            </div>
 
-                            <p class="text-xs text-slate-500 mt-1">
-                                View your academic deadlines
-                            </p>
+                            <div>
+                                <p class="font-medium text-slate-800">
+                                    Calendar
+                                </p>
+
+                                <p class="text-xs text-slate-500 mt-1">
+                                    View your academic deadlines
+                                </p>
+                            </div>
 
                         </a>
 
@@ -633,7 +623,6 @@
                 </section>
 
             </div>
-
 
             {{-- Student Completion --}}
             <section class="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
@@ -650,17 +639,15 @@
 
                 </div>
 
-
                 <div class="divide-y divide-slate-100">
 
                     @forelse($completionStats as $stat)
 
                         <div class="p-5">
 
-                            <div class="flex justify-between mb-2">
+                            <div class="flex justify-between items-center gap-4 mb-2">
 
                                 <div>
-
                                     <p class="font-medium text-slate-900">
                                         {{ $stat['task']->title }}
                                     </p>
@@ -671,16 +658,13 @@
                                         {{ $stat['total'] }}
                                         students completed
                                     </p>
-
                                 </div>
 
-
-                                <span class="text-sm font-semibold text-blue-600">
+                                <span class="text-sm font-semibold text-blue-600 shrink-0">
                                     {{ $stat['progress'] }}%
                                 </span>
 
                             </div>
-
 
                             <div class="w-full bg-slate-100 rounded-full h-2">
 
@@ -696,6 +680,12 @@
                     @empty
 
                         <div class="p-8 text-center">
+
+                            <i
+                                data-lucide="chart-no-axes-column"
+                                class="w-8 h-8 text-slate-300 mx-auto mb-2"
+                                aria-hidden="true"
+                            ></i>
 
                             <p class="font-medium text-slate-700">
                                 No student progress available yet.
@@ -713,14 +703,12 @@
 
             </section>
 
-
             {{-- Teacher Announcements --}}
             <section class="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
 
-                <div class="p-6 border-b border-slate-200 flex justify-between">
+                <div class="p-6 border-b border-slate-200 flex justify-between items-center gap-4">
 
                     <div>
-
                         <h2 class="font-semibold text-slate-900">
                             Latest Announcements
                         </h2>
@@ -728,19 +716,16 @@
                         <p class="text-sm text-slate-500 mt-1">
                             Recent school announcements
                         </p>
-
                     </div>
-
 
                     <a
                         href="{{ route('announcements.index') }}"
-                        class="text-sm text-blue-600 hover:text-blue-700"
+                        class="text-sm text-blue-600 hover:text-blue-700 font-medium shrink-0"
                     >
                         View all
                     </a>
 
                 </div>
-
 
                 <div class="divide-y divide-slate-100">
 
@@ -767,8 +752,18 @@
 
                     @empty
 
-                        <div class="p-8 text-center text-sm text-slate-500">
-                            No announcements yet.
+                        <div class="p-8 text-center">
+
+                            <i
+                                data-lucide="megaphone"
+                                class="w-8 h-8 text-slate-300 mx-auto mb-2"
+                                aria-hidden="true"
+                            ></i>
+
+                            <p class="text-sm text-slate-500">
+                                No announcements yet.
+                            </p>
+
                         </div>
 
                     @endforelse
@@ -777,13 +772,13 @@
 
             </section>
 
-
         {{-- ========================================================= --}}
         {{-- ADMIN DASHBOARD                                           --}}
         {{-- ========================================================= --}}
 
         @else
 
+            {{-- Welcome --}}
             <div class="mb-8">
 
                 <p class="text-sm font-medium text-purple-600 mb-1">
@@ -800,7 +795,6 @@
 
             </div>
 
-
             {{-- Admin Statistics --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
 
@@ -816,7 +810,6 @@
 
                 </div>
 
-
                 <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
 
                     <p class="text-sm text-slate-500">
@@ -829,7 +822,6 @@
 
                 </div>
 
-
                 <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
 
                     <p class="text-sm text-slate-500">
@@ -841,7 +833,6 @@
                     </p>
 
                 </div>
-
 
                 <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
 
@@ -857,10 +848,8 @@
 
             </div>
 
-
             {{-- Admin Task Overview --}}
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
 
                 <section class="xl:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm">
 
@@ -876,14 +865,23 @@
 
                     </div>
 
-
-                    <div class="p-6 grid grid-cols-2 gap-4">
+                    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                         <div class="p-5 rounded-xl bg-orange-50">
 
-                            <p class="text-sm text-orange-700">
-                                Pending Tasks
-                            </p>
+                            <div class="flex items-center gap-2">
+
+                                <i
+                                    data-lucide="clock"
+                                    class="w-5 h-5 text-orange-700"
+                                    aria-hidden="true"
+                                ></i>
+
+                                <p class="text-sm text-orange-700">
+                                    Pending Tasks
+                                </p>
+
+                            </div>
 
                             <p class="text-3xl font-bold text-orange-700 mt-2">
                                 {{ $pendingTasks }}
@@ -891,12 +889,21 @@
 
                         </div>
 
-
                         <div class="p-5 rounded-xl bg-green-50">
 
-                            <p class="text-sm text-green-700">
-                                Completed Tasks
-                            </p>
+                            <div class="flex items-center gap-2">
+
+                                <i
+                                    data-lucide="check-circle"
+                                    class="w-5 h-5 text-green-700"
+                                    aria-hidden="true"
+                                ></i>
+
+                                <p class="text-sm text-green-700">
+                                    Completed Tasks
+                                </p>
+
+                            </div>
 
                             <p class="text-3xl font-bold text-green-700 mt-2">
                                 {{ $completedTasks }}
@@ -905,7 +912,6 @@
                         </div>
 
                     </div>
-
 
                     <div class="px-6 pb-6">
 
@@ -921,11 +927,17 @@
 
                         </div>
 
-
-                        <div class="w-full bg-slate-100 rounded-full h-3">
+                        <div
+                            class="w-full bg-slate-100 rounded-full h-3"
+                            role="progressbar"
+                            aria-label="Overall task completion"
+                            aria-valuenow="{{ $systemProgress }}"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >
 
                             <div
-                                class="bg-purple-600 h-3 rounded-full"
+                                class="bg-purple-600 h-3 rounded-full transition-all"
                                 style="width: {{ $systemProgress }}%"
                             ></div>
 
@@ -935,7 +947,6 @@
 
                 </section>
 
-
                 {{-- Admin Quick Actions --}}
                 <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
 
@@ -943,30 +954,94 @@
                         Quick Actions
                     </h2>
 
+                    <p class="text-sm text-slate-500 mt-1">
+                        Common administrative actions
+                    </p>
 
                     <div class="space-y-3 mt-5">
 
                         <a
-                            href="{{ route('tasks.index') }}"
-                            class="block p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition"
+                            href="{{ route('tasks.create') }}"
+                            class="flex items-center gap-3 p-4 rounded-xl bg-blue-50 hover:bg-blue-100 transition"
                         >
-                            📚 Manage Tasks
+
+                            <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-700 shrink-0">
+                                <i data-lucide="plus-circle" class="w-5 h-5" aria-hidden="true"></i>
+                            </div>
+
+                            <div>
+                                <p class="font-medium text-blue-800">
+                                    Create Task
+                                </p>
+
+                                <p class="text-xs text-blue-600 mt-1">
+                                    Assign work to students
+                                </p>
+                            </div>
+
                         </a>
 
+                        <a
+                            href="{{ route('tasks.index') }}"
+                            class="flex items-center gap-3 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition"
+                        >
+
+                            <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white text-slate-600 shrink-0">
+                                <i data-lucide="book-open" class="w-5 h-5" aria-hidden="true"></i>
+                            </div>
+
+                            <div>
+                                <p class="font-medium text-slate-800">
+                                    Manage Tasks
+                                </p>
+
+                                <p class="text-xs text-slate-500 mt-1">
+                                    View and manage system tasks
+                                </p>
+                            </div>
+
+                        </a>
 
                         <a
                             href="{{ route('announcements.index') }}"
-                            class="block p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition"
+                            class="flex items-center gap-3 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition"
                         >
-                            📢 Manage Announcements
-                        </a>
 
+                            <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white text-slate-600 shrink-0">
+                                <i data-lucide="megaphone" class="w-5 h-5" aria-hidden="true"></i>
+                            </div>
+
+                            <div>
+                                <p class="font-medium text-slate-800">
+                                    Manage Announcements
+                                </p>
+
+                                <p class="text-xs text-slate-500 mt-1">
+                                    Publish school updates
+                                </p>
+                            </div>
+
+                        </a>
 
                         <a
                             href="{{ route('calendar.index') }}"
-                            class="block p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition"
+                            class="flex items-center gap-3 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition"
                         >
-                            📅 Open Calendar
+
+                            <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white text-slate-600 shrink-0">
+                                <i data-lucide="calendar-days" class="w-5 h-5" aria-hidden="true"></i>
+                            </div>
+
+                            <div>
+                                <p class="font-medium text-slate-800">
+                                    Open Calendar
+                                </p>
+
+                                <p class="text-xs text-slate-500 mt-1">
+                                    View academic deadlines
+                                </p>
+                            </div>
+
                         </a>
 
                     </div>
@@ -975,8 +1050,7 @@
 
             </div>
 
-
-            {{-- Recent Tasks --}}
+            {{-- Admin Recent Tasks --}}
             <section class="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
 
                 <div class="p-6 border-b border-slate-200">
@@ -991,7 +1065,6 @@
 
                 </div>
 
-
                 <div class="divide-y divide-slate-100">
 
                     @forelse($recentTasks as $task)
@@ -1001,10 +1074,9 @@
                             class="block p-5 hover:bg-slate-50 transition"
                         >
 
-                            <div class="flex justify-between">
+                            <div class="flex justify-between gap-4">
 
                                 <div>
-
                                     <p class="font-medium text-slate-900">
                                         {{ $task->title }}
                                     </p>
@@ -1012,11 +1084,9 @@
                                     <p class="text-sm text-slate-500 mt-1">
                                         {{ $task->subject }} · {{ $task->type }}
                                     </p>
-
                                 </div>
 
-
-                                <div class="text-right">
+                                <div class="text-right shrink-0">
 
                                     <p class="text-xs text-slate-400">
                                         {{ $task->created_at->diffForHumans() }}
@@ -1034,8 +1104,18 @@
 
                     @empty
 
-                        <div class="p-8 text-center text-slate-500">
-                            No tasks available.
+                        <div class="p-8 text-center">
+
+                            <i
+                                data-lucide="clipboard-list"
+                                class="w-8 h-8 text-slate-300 mx-auto mb-2"
+                                aria-hidden="true"
+                            ></i>
+
+                            <p class="text-sm text-slate-500">
+                                No tasks available.
+                            </p>
+
                         </div>
 
                     @endforelse
@@ -1044,14 +1124,12 @@
 
             </section>
 
-
             {{-- Admin Announcements --}}
             <section class="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
 
-                <div class="p-6 border-b border-slate-200 flex justify-between">
+                <div class="p-6 border-b border-slate-200 flex justify-between items-center gap-4">
 
                     <div>
-
                         <h2 class="font-semibold text-slate-900">
                             Recent Announcements
                         </h2>
@@ -1059,19 +1137,16 @@
                         <p class="text-sm text-slate-500 mt-1">
                             Latest announcements published in the system.
                         </p>
-
                     </div>
-
 
                     <a
                         href="{{ route('announcements.index') }}"
-                        class="text-sm text-blue-600 hover:text-blue-700"
+                        class="text-sm text-blue-600 hover:text-blue-700 font-medium shrink-0"
                     >
                         View all
                     </a>
 
                 </div>
-
 
                 <div class="divide-y divide-slate-100">
 
@@ -1090,12 +1165,26 @@
                                 {{ Str::limit($announcement->content, 100) }}
                             </p>
 
+                            <p class="text-xs text-slate-400 mt-2">
+                                {{ $announcement->created_at->diffForHumans() }}
+                            </p>
+
                         </a>
 
                     @empty
 
-                        <div class="p-8 text-center text-slate-500">
-                            No announcements yet.
+                        <div class="p-8 text-center">
+
+                            <i
+                                data-lucide="megaphone"
+                                class="w-8 h-8 text-slate-300 mx-auto mb-2"
+                                aria-hidden="true"
+                            ></i>
+
+                            <p class="text-sm text-slate-500">
+                                No announcements yet.
+                            </p>
+
                         </div>
 
                     @endforelse
