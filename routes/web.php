@@ -1,17 +1,22 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
+use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TaskSubmissionController;
+
+// ========================
+// AUTHENTICATED ROUTES
+// ========================
 
 Route::middleware('auth')->group(function () {
 
@@ -19,16 +24,30 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])
         ->name('dashboard');
 
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard.index');
+
+    // ========================
+    // CALENDAR
+    // ========================
+
+    Route::get('/calendar', [CalendarController::class, 'index'])
+        ->name('calendar.index');
+
+    Route::get('/calendar/day/{date}', [CalendarController::class, 'day'])
+        ->where('date', '[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        ->name('calendar.day');
 
     // ========================
     // TASKS
     // ========================
 
-    // Students can view tasks
+    // All authorized users can access the task list.
     Route::get('/tasks', [TaskController::class, 'index'])
         ->name('tasks.index');
 
-    // Teachers and Admins can create tasks
+    // Teachers and admins can create tasks.
+    // IMPORTANT: Keep /tasks/create before /tasks/{task}.
     Route::middleware('role:teacher,admin')->group(function () {
 
         Route::get('/tasks/create', [TaskController::class, 'create'])
@@ -36,13 +55,14 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/tasks', [TaskController::class, 'store'])
             ->name('tasks.store');
+
     });
 
-    // View individual task
+    // View an individual task.
     Route::get('/tasks/{task}', [TaskController::class, 'show'])
         ->name('tasks.show');
 
-    // Teachers and Admins can edit/delete tasks
+    // Teachers and admins can edit, update, and delete tasks.
     Route::middleware('role:teacher,admin')->group(function () {
 
         Route::get('/tasks/{task}/edit', [TaskController::class, 'edit'])
@@ -53,121 +73,97 @@ Route::middleware('auth')->group(function () {
 
         Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])
             ->name('tasks.destroy');
+
     });
 
-    // Students can mark tasks completed
+    // Students can mark assigned tasks as completed.
     Route::patch('/tasks/{task}/complete', [TaskController::class, 'complete'])
         ->middleware('role:student')
         ->name('tasks.complete');
 
+    // ========================
+    // TASK SUBMISSIONS
+    // ========================
 
-    // Teachers and Admins can manage tasks
-    Route::middleware('role:teacher,admin')->group(function () {
+    Route::post('/tasks/{task}/submissions', [TaskSubmissionController::class, 'store'])
+        ->name('tasks.submissions.store');
 
-        Route::get('/tasks/create', [TaskController::class, 'create'])
-            ->name('tasks.create');
+    Route::get('/tasks/{task}/submissions', [TaskSubmissionController::class, 'index'])
+        ->name('tasks.submissions.index');
 
-        Route::post('/tasks', [TaskController::class, 'store'])
-            ->name('tasks.store');
+    Route::patch('/task-submissions/{submission}/review', [TaskSubmissionController::class, 'review'])
+        ->name('task-submissions.review');
 
-        Route::get('/tasks/{task}/edit', [TaskController::class, 'edit'])
-            ->name('tasks.edit');
+    Route::get('/task-submissions/{submission}/download', [TaskSubmissionController::class, 'download'])
+        ->name('task-submissions.download');
 
-        Route::put('/tasks/{task}', [TaskController::class, 'update'])
-            ->name('tasks.update');
+    // ========================
+    // ANNOUNCEMENTS
+    // ========================
 
-        Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])
-            ->name('tasks.destroy');
-
-        // ========================
-        // TEACHER MANAGEMENT
-        // Admin Only
-        // ========================
-
-        Route::middleware('role:admin')->group(function () {
-
-            Route::get('/admin/teachers', [TeacherController::class, 'index'])
-                ->name('admin.teachers.index');
-
-        });
-            
-        
-    });
-
-
-    // Announcements
     Route::resource('announcements', AnnouncementController::class);
 
+    // ========================
+    // NOTIFICATIONS
+    // ========================
 
-    // Student Management - Admin Only
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
+
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.read');
+
+    // ========================
+    // ADMIN: STUDENT MANAGEMENT
+    // ========================
+
     Route::middleware('role:admin')->group(function () {
+
         Route::get('/admin/students', [StudentController::class, 'index'])
             ->name('admin.students.index');
-    });
 
+        // ========================
+        // ADMIN: TEACHER MANAGEMENT
+        // ========================
 
-    // ========================
-    // CLASS MANAGEMENT
-    // Admin Only
-    // ========================
+        Route::get('/admin/teachers', [TeacherController::class, 'index'])
+            ->name('admin.teachers.index');
 
-    Route::middleware('role:admin')->group(function () {
-    // Class directory
-    Route::get('/admin/classes', [ClassController::class, 'index'])
+        // ========================
+        // ADMIN: CLASS MANAGEMENT
+        // ========================
+
+        Route::get('/admin/classes', [ClassController::class, 'index'])
             ->name('admin.classes.index');
 
-        // Create class
         Route::get('/admin/classes/create', [ClassController::class, 'create'])
             ->name('admin.classes.create');
 
         Route::post('/admin/classes', [ClassController::class, 'store'])
             ->name('admin.classes.store');
 
-        // Edit class
         Route::get('/admin/classes/{class}/edit', [ClassController::class, 'edit'])
             ->name('admin.classes.edit');
 
-        // Update class
         Route::put('/admin/classes/{class}', [ClassController::class, 'update'])
             ->name('admin.classes.update');
 
-        // View class details and enrolled students
         Route::get('/admin/classes/{class}', [ClassController::class, 'show'])
             ->name('admin.classes.show');
 
-        // Enroll a student
         Route::post('/admin/classes/{class}/students', [ClassController::class, 'enroll'])
             ->name('admin.classes.enroll');
 
-        // Remove a student
         Route::delete('/admin/classes/{class}/students/{student}', [ClassController::class, 'removeStudent'])
             ->name('admin.classes.students.remove');
+
     });
-    
-        // Task submission routes
-    Route::post('/tasks/{task}/submissions', [
-        TaskSubmissionController::class,
-        'store'
-    ])->name('tasks.submissions.store');
 
-    Route::get('/tasks/{task}/submissions', [
-        TaskSubmissionController::class,
-        'index'
-    ])->name('tasks.submissions.index');
-
-    Route::patch('/task-submissions/{submission}/review', [
-        TaskSubmissionController::class,
-        'review'
-    ])->name('task-submissions.review');
-
-    Route::get('/task-submissions/{submission}/download', [
-        TaskSubmissionController::class,
-        'download'
-    ])->name('task-submissions.download');
 });
 
-
-// ------------------------ REGISTRATION ------------------------
+// ========================
+// PUBLIC REGISTRATION
+// ========================
 
 Route::get('/register', [RegistrationController::class, 'index'])
     ->name('register');
@@ -180,9 +176,9 @@ Route::post('/register/{role}', [RegistrationController::class, 'store'])
     ->whereIn('role', ['student', 'teacher'])
     ->name('register.store');
 
-
-    
-// ------------------------ AUTH ------------------------
+// ========================
+// AUTHENTICATION
+// ========================
 
 Route::get('/login', [AuthController::class, 'showLogin'])
     ->name('login');
@@ -190,15 +186,5 @@ Route::get('/login', [AuthController::class, 'showLogin'])
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/logout', [AuthController::class, 'logout'])
-    ->name('logout');
-    
-Route::get('/notifications', [NotificationController::class, 'index'])
-    ->name('notifications.index');
-
-Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])
-    ->name('notifications.read');
-
-// ----------------------- Calendar -----------------------
-Route::get('/calendar', [CalendarController::class, 'index'])
     ->middleware('auth')
-    ->name('calendar.index');
+    ->name('logout');
