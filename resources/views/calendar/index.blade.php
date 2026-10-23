@@ -210,36 +210,52 @@
                     @endphp
 
                     <div
-                        class="min-w-0 min-h-[76px] border-b border-r border-slate-200
-                               p-1 sm:min-h-[120px] sm:p-2 lg:min-h-[145px]
-                               {{ $isCurrentMonth ? 'bg-white' : 'bg-slate-50/70' }}"
+                        class="group relative min-w-0 min-h-[76px]
+                            border-b border-r border-slate-200
+                            p-1 sm:min-h-[120px] sm:p-2 lg:min-h-[145px]
+                            transition-colors duration-150
+                            hover:bg-blue-50/70
+                            focus-within:bg-blue-50/70
+                            {{ $isCurrentMonth ? 'bg-white' : 'bg-slate-50/70' }}"
                     >
 
-                        {{-- Clickable Date Number --}}
-                        <div class="mb-1 flex items-center justify-center sm:mb-2 sm:justify-start">
+                        {{-- Entire Calendar Date Box Clickable --}}
+                        <a
+                            href="{{ route('calendar.day', [
+                                'date' => $dateKey
+                            ]) }}"
+                            aria-label="View schedule for {{ $calendarDate->format('F j, Y') }}"
+                            class="absolute inset-0 z-10
+                                focus:outline-none
+                                focus-visible:ring-2
+                                focus-visible:ring-inset
+                                focus-visible:ring-blue-500"
+                        ></a>
 
-                            <a
-                                href="{{ route('calendar.day', [
-                                    'date' => $calendarDate->format('Y-m-d')
-                                ]) }}"
-                                aria-label="View schedule for {{ $calendarDate->format('F j, Y') }}"
-                                class="inline-flex h-6 w-6 items-center justify-center rounded-full
-                                    text-[11px] font-semibold transition hover:ring-2
-                                    hover:ring-blue-300 focus:outline-none focus:ring-2
-                                    focus:ring-blue-500 sm:h-8 sm:w-8 sm:text-sm
-                                    {{ $isToday
-                                            ? 'bg-blue-600 text-white shadow-sm'
-                                            : ($isCurrentMonth
-                                                ? 'text-slate-700 hover:bg-blue-50'
-                                                : 'text-slate-400 hover:bg-slate-100') }}"
-                            >
-                                {{ $calendarDate->day }}
-                            </a>
+                        {{-- Calendar Date Number --}}
+<div class="pointer-events-none relative z-0 mb-1
+            flex items-center justify-center
+            sm:mb-2 sm:justify-start">
 
-                        </div>
+    <span
+        class="inline-flex h-6 w-6 items-center
+               justify-center rounded-full
+               text-[11px] font-semibold
+               sm:h-8 sm:w-8 sm:text-sm
+
+               {{ $isToday
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : ($isCurrentMonth
+                        ? 'text-slate-700'
+                        : 'text-slate-400') }}"
+    >
+        {{ $calendarDate->day }}
+    </span>
+
+</div>
 
                         {{-- Tasks for This Date --}}
-                        <div class="space-y-1">
+                        <div class="relative z-20 space-y-1">
 
                             @foreach($visibleTasks as $task)
 
