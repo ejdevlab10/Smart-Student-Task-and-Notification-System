@@ -1,0 +1,7 @@
+    Role	                Email                   Password
+    Administrator	    admin@demo.com      	DemoAdmin123!
+    Teacher 1	        teacher1@demo.com	    DemoTeacher123!
+    Teacher 2       	teacher2@demo.com	    DemoTeacher123!
+    Student 1       	student1@demo.com	    DemoStudent123!
+    Student 2       	student2@demo.com   	DemoStudent123!
+    Students 3–5    	student3@demo.com       DemoStudent123!

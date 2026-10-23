@@ -1,8 +1,6 @@
 <aside
-    id="mobile-sidebar"
-    class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white
-           flex flex-col transform -translate-x-full transition-transform duration-300 ease-in-out
-           lg:translate-x-0 lg:z-40"
+    class="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col
+           bg-slate-900 text-white lg:flex"
 >
     {{-- Logo --}}
 <div class="h-20 flex items-center justify-between px-6 border-b border-slate-700">
@@ -16,19 +14,10 @@
         </p>
     </div>
 
-    {{-- Mobile Close Button --}}
-    <button
-        type="button"
-        id="close-sidebar"
-        class="lg:hidden text-slate-300 hover:text-white p-2 rounded-lg hover:bg-slate-800"
-        aria-label="Close navigation menu"
-    >
-        <i data-lucide="x" class="w-5 h-5"></i>
-    </button>
 </div>
 
     {{-- Navigation --}}
-    <nav class="flex-1 px-4 py-6 space-y-2">
+    <nav class="min-h-0 flex-1 overflow-y-auto px-4 py-6 space-y-2">
 
         {{-- Dashboard --}}
         <a href="{{ route('dashboard') }}"

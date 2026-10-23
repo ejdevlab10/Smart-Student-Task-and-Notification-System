@@ -13,15 +13,9 @@
 <body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
 
     @auth
-        {{-- Sidebar --}}
-        <x-sidebar />
 
-        {{-- Mobile Sidebar Overlay --}}
-        <div
-            id="sidebar-overlay"
-            class="fixed inset-0 z-40 hidden bg-black/50 lg:hidden"
-            aria-hidden="true"
-        ></div>
+        {{-- Desktop Sidebar --}}
+        <x-sidebar />
 
         {{-- Main Application --}}
         <div class="min-h-screen lg:ml-64">
@@ -30,72 +24,125 @@
             <x-topbar />
 
             {{-- Page Content --}}
-            <main class="min-w-0">
+            <main class="min-w-0 pb-24 lg:pb-0">
                 @yield('content')
             </main>
 
             {{-- Footer --}}
-            <footer class="border-t border-slate-200 bg-white px-4 py-5 sm:px-6 lg:px-8">
-                <div class="mx-auto flex max-w-7xl flex-col gap-1 text-center text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:text-left">
+            <footer class="hidden border-t border-slate-200 bg-white
+                           px-4 py-5 sm:px-6 lg:block lg:px-8">
+
+                <div class="mx-auto flex max-w-7xl flex-col gap-1
+                            text-center text-xs text-slate-500
+                            sm:flex-row sm:items-center sm:justify-between sm:text-left">
+
                     <p>&copy; {{ date('Y') }} Smart Student. All rights reserved.</p>
+
                     <p>Academic Task and Notification System</p>
+
                 </div>
+
             </footer>
 
         </div>
+
+        {{-- Mobile Bottom Navigation --}}
+        <x-bottom-navigation />
+
     @else
+
         <main class="min-h-screen">
             @yield('content')
         </main>
+
     @endauth
 
     @stack('scripts')
 
-    {{-- Mobile Sidebar Controls --}}
+    {{-- Mobile More Menu Controls --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const sidebar = document.getElementById('mobile-sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            const openButton = document.getElementById('open-sidebar');
-            const closeButton = document.getElementById('close-sidebar');
 
-            if (!sidebar || !overlay || !openButton || !closeButton) {
+            const openButton = document.getElementById('open-more-menu');
+            const closeButton = document.getElementById('close-more-menu');
+            const menu = document.getElementById('mobile-more-menu');
+            const overlay = document.getElementById('more-menu-overlay');
+
+            if (!openButton || !closeButton || !menu || !overlay) {
                 return;
             }
 
-            function openSidebar() {
-                sidebar.classList.remove('-translate-x-full');
+            let previousFocus = null;
+
+            function openMenu() {
+                previousFocus = document.activeElement;
+
+                menu.classList.remove('hidden');
                 overlay.classList.remove('hidden');
 
                 document.body.classList.add('overflow-hidden');
-
                 openButton.setAttribute('aria-expanded', 'true');
+
+                closeButton.focus();
             }
 
-            function closeSidebar() {
-                sidebar.classList.add('-translate-x-full');
+            function closeMenu() {
+                menu.classList.add('hidden');
                 overlay.classList.add('hidden');
 
                 document.body.classList.remove('overflow-hidden');
-
                 openButton.setAttribute('aria-expanded', 'false');
+
+                if (previousFocus) {
+                    previousFocus.focus();
+                }
             }
 
-            openButton.addEventListener('click', openSidebar);
-            closeButton.addEventListener('click', closeSidebar);
-            overlay.addEventListener('click', closeSidebar);
+            openButton.addEventListener('click', openMenu);
+            closeButton.addEventListener('click', closeMenu);
+            overlay.addEventListener('click', closeMenu);
 
             document.addEventListener('keydown', function (event) {
+                if (menu.classList.contains('hidden')) {
+                    return;
+                }
+
                 if (event.key === 'Escape') {
-                    closeSidebar();
+                    closeMenu();
+                }
+
+                if (event.key === 'Tab') {
+                    const focusable = Array.from(
+                        menu.querySelectorAll(
+                            'a[href], button:not([disabled]), input:not([disabled])'
+                        )
+                    ).filter(element => element.getClientRects().length > 0);
+
+                    if (!focusable.length) {
+                        event.preventDefault();
+                        return;
+                    }
+
+                    const first = focusable[0];
+                    const last = focusable[focusable.length - 1];
+
+                    if (event.shiftKey && document.activeElement === first) {
+                        event.preventDefault();
+                        last.focus();
+                    } else if (!event.shiftKey && document.activeElement === last) {
+                        event.preventDefault();
+                        first.focus();
+                    }
                 }
             });
 
             window.addEventListener('resize', function () {
-                if (window.innerWidth >= 1024) {
-                    closeSidebar();
+                if (window.innerWidth >= 1024 &&
+                    !menu.classList.contains('hidden')) {
+                    closeMenu();
                 }
             });
+
         });
     </script>
 

@@ -3,19 +3,6 @@
     {{-- Left Side --}}
     <div class="flex items-center gap-3">
 
-        {{-- Mobile Menu Button --}}
-        <button
-            type="button"
-            id="open-sidebar"
-            class="lg:hidden inline-flex items-center justify-center p-2 rounded-lg
-                   text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            aria-label="Open navigation menu"
-            aria-controls="mobile-sidebar"
-            aria-expanded="false"
-        >
-            <i data-lucide="menu" class="w-6 h-6"></i>
-        </button>
-
         {{-- Page Information --}}
         <div>
             <p class="text-sm text-slate-500">

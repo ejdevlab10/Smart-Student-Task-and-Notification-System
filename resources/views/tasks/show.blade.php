@@ -315,7 +315,7 @@
                 </div>
 
                 {{-- Student Submission Section --}}
-                    @if($currentUser->isStudent() && $studentAssignment ?? false)
+                    @if($currentUser->isStudent() && $task->students->contains('id', $currentUser->id))
                         <div class="mt-8 rounded-xl border border-slate-200 bg-white overflow-hidden">
 
                             {{-- Section Header --}}

@@ -106,4 +106,54 @@ class CalendarController extends Controller
             'currentMonth'
         ));
     }
+    public function day(string $date)
+    {
+        Gate::authorize('viewAny', Task::class);
+
+        $user = auth()->user();
+
+        // Validate and parse the selected date.
+        try {
+            $selectedDate = Carbon::createFromFormat('!Y-m-d', $date);
+
+            if (!$selectedDate || $selectedDate->format('Y-m-d') !== $date) {
+                abort(404);
+            }
+        } catch (\Exception $e) {
+            abort(404);
+        }
+
+        // Retrieve tasks according to the user's role.
+        if ($user->isStudent()) {
+
+            // Students see only tasks assigned to them.
+            $tasks = $user->assignedTasks()
+                ->whereDate('due_date', $selectedDate->toDateString())
+                ->orderBy('due_date')
+                ->get();
+
+        } elseif ($user->isTeacher()) {
+
+            // Teachers see only tasks they created.
+            $tasks = Task::where('created_by', $user->id)
+                ->whereDate('due_date', $selectedDate->toDateString())
+                ->orderBy('due_date')
+                ->get();
+
+        } elseif ($user->isAdmin()) {
+
+            // Administrators see all tasks.
+            $tasks = Task::whereDate('due_date', $selectedDate->toDateString())
+                ->orderBy('due_date')
+                ->get();
+
+        } else {
+            abort(403);
+        }
+
+        return view('calendar.day', compact(
+            'tasks',
+            'selectedDate'
+        ));
+    }
 }

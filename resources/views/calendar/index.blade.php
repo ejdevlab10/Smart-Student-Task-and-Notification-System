@@ -6,48 +6,114 @@
 
 @section('content')
 
-<div class="min-h-screen bg-slate-100 p-6 lg:p-8">
+@php
+    use Illuminate\Support\Carbon;
 
-    <div class="max-w-7xl mx-auto">
+    // Group tasks by date once to avoid filtering the entire collection
+    // repeatedly for every calendar cell.
+    $tasksByDate = $tasks->filter(function ($task) {
+        return $task->due_date !== null;
+    })->groupBy(function ($task) {
+        return $task->due_date->format('Y-m-d');
+    });
+
+    $startDate = $currentMonth->copy()->startOfWeek(Carbon::SUNDAY);
+    $endDate = $currentMonth->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
+
+    $calendarDate = $startDate->copy();
+
+    $isStudent = auth()->user()->role === 'student';
+
+    $getTaskStatus = function ($task) use ($isStudent) {
+        // Students have their own task status in the task_user pivot.
+        // Teachers/admins use the task's main status.
+        return $isStudent
+            ? ($task->pivot->status ?? 'Pending')
+            : ($task->status ?? 'Pending');
+    };
+
+    $getStatusColor = function ($task) use ($getTaskStatus) {
+        $status = strtolower(trim($getTaskStatus($task)));
+
+        if ($status === 'completed') {
+            return 'bg-emerald-50 border-emerald-200 text-emerald-800';
+        }
+
+        if (
+            $task->due_date &&
+            $task->due_date->isPast() &&
+            !in_array($status, ['completed', 'complete', 'submitted'])
+        ) {
+            return 'bg-rose-50 border-rose-200 text-rose-800';
+        }
+
+        return 'bg-blue-50 border-blue-200 text-blue-800';
+    };
+
+    $getStatusLabel = function ($task) use ($getTaskStatus) {
+        $status = strtolower(trim($getTaskStatus($task)));
+
+        if ($status === 'completed') {
+            return 'Completed';
+        }
+
+        if (
+            $task->due_date &&
+            $task->due_date->isPast() &&
+            !in_array($status, ['completed', 'complete', 'submitted'])
+        ) {
+            return 'Overdue';
+        }
+
+        return ucfirst($status);
+    };
+@endphp
+
+<div class="min-h-screen bg-slate-50 px-3 py-4 sm:px-5 sm:py-6 lg:p-8">
+
+    <div class="mx-auto max-w-7xl">
 
         {{-- Page Header --}}
-        <div class="mb-6">
-
-            <h1 class="text-3xl font-bold text-slate-900">
+        <div class="mb-5 sm:mb-6">
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
                 Academic Calendar
             </h1>
 
-            <p class="text-slate-500 mt-1">
-                View your assignments, projects, quizzes and exams by date.
+            <p class="mt-1 text-sm text-slate-500 sm:text-base">
+                View your assignments, projects, quizzes, and exams by date.
             </p>
-
         </div>
 
-        {{-- Calendar --}}
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        {{-- Calendar Card --}}
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
-            {{-- Calendar Navigation --}}
-            <div class="flex items-center justify-between p-5 border-b border-slate-200">
+            {{-- Month Navigation --}}
+            <div class="flex items-center justify-between gap-2 border-b border-slate-200 p-3 sm:p-5">
 
                 {{-- Previous Month --}}
                 <a
                     href="{{ route('calendar.index', [
                         'month' => $currentMonth->copy()->subMonth()->format('Y-m')
                     ]) }}"
-                    class="px-4 py-2 rounded-lg border border-slate-200
-                           text-sm font-medium text-slate-700
-                           hover:bg-slate-50 transition"
+                    aria-label="Previous month"
+                    class="inline-flex min-h-10 items-center justify-center gap-1 rounded-xl
+                           border border-slate-200 px-2.5 text-sm font-medium text-slate-700
+                           transition hover:bg-slate-50 focus:outline-none focus:ring-2
+                           focus:ring-blue-500 sm:px-4"
                 >
-                    ← Previous
+                    <span aria-hidden="true">&larr;</span>
+                    <span class="hidden sm:inline">Previous</span>
                 </a>
 
-                {{-- Month --}}
-                <div class="text-center">
-
-                    <h2 class="text-xl font-bold text-slate-900">
+                {{-- Current Month --}}
+                <div class="min-w-0 text-center">
+                    <h2 class="text-lg font-bold text-slate-900 sm:text-2xl">
                         {{ $currentMonth->format('F Y') }}
                     </h2>
 
+                    <p class="mt-0.5 text-xs text-slate-500 sm:text-sm">
+                        Academic schedule
+                    </p>
                 </div>
 
                 {{-- Next Month --}}
@@ -55,44 +121,68 @@
                     href="{{ route('calendar.index', [
                         'month' => $currentMonth->copy()->addMonth()->format('Y-m')
                     ]) }}"
-                    class="px-4 py-2 rounded-lg border border-slate-200
-                           text-sm font-medium text-slate-700
-                           hover:bg-slate-50 transition"
+                    aria-label="Next month"
+                    class="inline-flex min-h-10 items-center justify-center gap-1 rounded-xl
+                           border border-slate-200 px-2.5 text-sm font-medium text-slate-700
+                           transition hover:bg-slate-50 focus:outline-none focus:ring-2
+                           focus:ring-blue-500 sm:px-4"
                 >
-                    Next →
+                    <span class="hidden sm:inline">Next</span>
+                    <span aria-hidden="true">&rarr;</span>
                 </a>
 
             </div>
 
-            {{-- Today Button --}}
-            <div class="px-5 py-3 border-b border-slate-100">
+            {{-- Today Button and Legend --}}
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-3 py-3 sm:px-5">
 
                 <a
                     href="{{ route('calendar.index') }}"
-                    class="inline-flex items-center px-3 py-1.5 rounded-lg
-                           bg-blue-50 text-blue-700 text-sm font-medium
-                           hover:bg-blue-100 transition"
+                    class="inline-flex min-h-9 items-center justify-center rounded-lg
+                           bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700
+                           transition hover:bg-blue-100 focus:outline-none focus:ring-2
+                           focus:ring-blue-500"
                 >
                     Today
                 </a>
 
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-slate-600 sm:gap-x-4 sm:text-sm">
+
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="h-2.5 w-2.5 rounded-full bg-blue-500"></span>
+                        Pending
+                    </span>
+
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                        Completed
+                    </span>
+
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="h-2.5 w-2.5 rounded-full bg-rose-500"></span>
+                        Overdue
+                    </span>
+
+                </div>
             </div>
 
             {{-- Weekday Header --}}
             <div class="grid grid-cols-7 border-b border-slate-200 bg-slate-50">
 
                 @foreach([
-                    'Sunday',
-                    'Monday',
-                    'Tuesday',
-                    'Wednesday',
-                    'Thursday',
-                    'Friday',
-                    'Saturday'
+                    'Sun',
+                    'Mon',
+                    'Tue',
+                    'Wed',
+                    'Thu',
+                    'Fri',
+                    'Sat'
                 ] as $day)
 
-                    <div class="p-3 text-center text-sm font-semibold text-slate-600">
-                        {{ $day }}
+                    <div class="py-2 text-center text-[10px] font-bold uppercase tracking-wide
+                                text-slate-500 sm:py-3 sm:text-xs">
+                        <span class="sm:hidden">{{ substr($day, 0, 1) }}</span>
+                        <span class="hidden sm:inline">{{ $day }}</span>
                     </div>
 
                 @endforeach
@@ -102,20 +192,12 @@
             {{-- Calendar Days --}}
             <div class="grid grid-cols-7">
 
-                @php
-                    $startDate = $currentMonth->copy()->startOfWeek();
-                    $endDate = $currentMonth->copy()->endOfMonth()->endOfWeek();
-
-                    $calendarDate = $startDate->copy();
-                @endphp
-
                 @while($calendarDate <= $endDate)
 
                     @php
+                        $dateKey = $calendarDate->format('Y-m-d');
 
-                        $dayTasks = $tasks->filter(function ($task) use ($calendarDate) {
-                            return $task->due_date->isSameDay($calendarDate);
-                        });
+                        $dayTasks = $tasksByDate->get($dateKey, collect());
 
                         $isToday = $calendarDate->isToday();
 
@@ -123,78 +205,90 @@
                             $calendarDate->month === $currentMonth->month &&
                             $calendarDate->year === $currentMonth->year;
 
+                        $visibleTasks = $dayTasks->take(3);
+                        $remainingTasks = max(0, $dayTasks->count() - $visibleTasks->count());
                     @endphp
 
                     <div
-                        class="
-                            min-h-[140px]
-                            border-b border-r border-slate-200
-                            p-2
-                            {{ $isCurrentMonth ? 'bg-white' : 'bg-slate-50' }}
-                        "
+                        class="min-w-0 min-h-[76px] border-b border-r border-slate-200
+                               p-1 sm:min-h-[120px] sm:p-2 lg:min-h-[145px]
+                               {{ $isCurrentMonth ? 'bg-white' : 'bg-slate-50/70' }}"
                     >
 
-                        {{-- Date Number --}}
-                        <div class="flex justify-between items-start mb-2">
+                        {{-- Clickable Date Number --}}
+                        <div class="mb-1 flex items-center justify-center sm:mb-2 sm:justify-start">
 
-                            <span
-                                class="
-                                    inline-flex
-                                    items-center
-                                    justify-center
-                                    w-8
-                                    h-8
-                                    rounded-full
-                                    text-sm
-                                    font-semibold
-
+                            <a
+                                href="{{ route('calendar.day', [
+                                    'date' => $calendarDate->format('Y-m-d')
+                                ]) }}"
+                                aria-label="View schedule for {{ $calendarDate->format('F j, Y') }}"
+                                class="inline-flex h-6 w-6 items-center justify-center rounded-full
+                                    text-[11px] font-semibold transition hover:ring-2
+                                    hover:ring-blue-300 focus:outline-none focus:ring-2
+                                    focus:ring-blue-500 sm:h-8 sm:w-8 sm:text-sm
                                     {{ $isToday
-                                        ? 'bg-blue-600 text-white'
-                                        : ($isCurrentMonth
-                                            ? 'text-slate-700'
-                                            : 'text-slate-400')
-                                    }}
-                                "
+                                            ? 'bg-blue-600 text-white shadow-sm'
+                                            : ($isCurrentMonth
+                                                ? 'text-slate-700 hover:bg-blue-50'
+                                                : 'text-slate-400 hover:bg-slate-100') }}"
                             >
                                 {{ $calendarDate->day }}
-                            </span>
+                            </a>
 
                         </div>
 
-                        {{-- Tasks --}}
-                        <div class="space-y-2">
+                        {{-- Tasks for This Date --}}
+                        <div class="space-y-1">
 
-                            @foreach($dayTasks as $task)
+                            @foreach($visibleTasks as $task)
+
+                                @php
+                                    $taskColor = $getStatusColor($task);
+                                    $taskStatusLabel = $getStatusLabel($task);
+                                @endphp
 
                                 <a
                                     href="{{ route('tasks.show', $task) }}"
-                                    class="
-                                        block
-                                        rounded-lg
-                                        bg-blue-50
-                                        border
-                                        border-blue-100
-                                        p-2
-                                        hover:bg-blue-100
-                                        transition
-                                    "
+                                    title="{{ $task->title }} — {{ $taskStatusLabel }}"
+                                    class="block min-w-0 overflow-hidden rounded-md border p-1
+                                           transition hover:brightness-95 focus:outline-none
+                                           focus:ring-2 focus:ring-blue-500 sm:rounded-lg
+                                           sm:p-2 {{ $taskColor }}"
                                 >
 
-                                    <p class="text-xs font-semibold text-blue-800 truncate">
+                                    {{-- Task Title --}}
+                                    <p class="truncate text-[9px] font-semibold leading-tight
+                                              sm:text-xs sm:leading-snug">
                                         {{ $task->title }}
                                     </p>
 
-                                    <p class="text-[11px] text-blue-600 mt-1">
+                                    {{-- Time: hidden on very small screens --}}
+                                    <p class="mt-1 hidden truncate text-[10px] opacity-80 sm:block">
                                         {{ $task->due_date->format('h:i A') }}
                                     </p>
 
-                                    <p class="text-[11px] text-slate-500 truncate">
+                                    {{-- Task Type: desktop only --}}
+                                    <p class="mt-1 hidden truncate text-[10px] opacity-80 lg:block">
                                         {{ $task->type }}
+                                    </p>
+
+                                    {{-- Status: desktop only --}}
+                                    <p class="mt-1 hidden truncate text-[10px] font-medium sm:block">
+                                        {{ $taskStatusLabel }}
                                     </p>
 
                                 </a>
 
                             @endforeach
+
+                            {{-- Additional Tasks Indicator --}}
+                            @if($remainingTasks > 0)
+                                <p class="truncate px-0.5 text-center text-[9px] font-semibold
+                                          text-slate-500 sm:text-left sm:text-[11px]">
+                                    +{{ $remainingTasks }} more
+                                </p>
+                            @endif
 
                         </div>
 
@@ -210,20 +304,7 @@
 
         </div>
 
-        {{-- Legend --}}
-        <div class="mt-6 flex flex-wrap gap-4 text-sm text-slate-600">
-
-            <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-full bg-blue-600"></span>
-                Today
-            </div>
-
-            <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded bg-blue-50 border border-blue-100"></span>
-                Task / Deadline
-            </div>
-
-        </div>
+        
 
     </div>
 

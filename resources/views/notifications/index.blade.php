@@ -1,173 +1,150 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-@section('title', 'Notifications')
+    <title>@yield('title', 'Smart Student') | Smart Student</title>
 
-@section('page-heading', 'Notifications')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
 
-@section('content')
+<body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
 
-<div class="min-h-screen bg-slate-100">
+    @auth
 
-    <div class="p-6 lg:p-8">
+        {{-- Desktop Sidebar --}}
+        <x-sidebar />
 
-        <div class="mb-8">
+        {{-- Main Application --}}
+        <div class="min-h-screen lg:ml-64">
 
-            <h1 class="text-3xl font-bold text-slate-900">
-                Notifications
-            </h1>
+            {{-- Topbar --}}
+            <x-topbar />
 
-            <p class="mt-2 text-slate-500">
-                View your latest task assignments, reminders and announcements.
-            </p>
+            {{-- Page Content --}}
+            <main class="min-w-0 pb-24 lg:pb-0">
+                @yield('content')
+            </main>
 
-        </div>
+            {{-- Footer --}}
+            <footer class="hidden border-t border-slate-200 bg-white
+                           px-4 py-5 sm:px-6 lg:block lg:px-8">
 
+                <div class="mx-auto flex max-w-7xl flex-col gap-1
+                            text-center text-xs text-slate-500
+                            sm:flex-row sm:items-center sm:justify-between sm:text-left">
 
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm">
+                    <p>&copy; {{ date('Y') }} Smart Student. All rights reserved.</p>
 
-            @forelse($notifications as $notification)
-
-                <div class="p-6 border-b border-slate-100
-                    {{ $notification->read_at ? '' : 'bg-blue-50' }}">
-
-                    <div class="flex items-start justify-between gap-4">
-
-                        {{-- Notification Information --}}
-                        <div class="flex gap-4">
-
-                            <div class="w-11 h-11 rounded-xl bg-blue-100
-                                flex items-center justify-center">
-
-                                @if(!empty($notification->data['announcement_id']))
-                                    📢
-                                @else
-                                    🔔
-                                @endif
-
-                            </div>
-
-
-                            <div>
-
-                                <h3 class="font-semibold text-slate-900">
-                                    {{ $notification->data['title'] ?? 'Notification' }}
-                                </h3>
-
-
-                                <p class="text-sm text-slate-600 mt-1">
-                                    {{ $notification->data['message'] ?? '' }}
-                                </p>
-
-
-                                @if(isset($notification->data['category']))
-
-                                    <span class="inline-flex mt-2 px-2 py-1 rounded-full text-xs bg-slate-100 text-slate-600">
-                                        {{ $notification->data['category'] }}
-                                    </span>
-
-                                @endif
-
-
-                                @if(isset($notification->data['due_date']))
-
-                                    <p class="text-xs text-slate-400 mt-2">
-                                        Due: {{ $notification->data['due_date'] }}
-                                    </p>
-
-                                @endif
-
-
-                                <p class="text-xs text-slate-400 mt-2">
-                                    {{ $notification->created_at->diffForHumans() }}
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        {{-- Notification Action --}}
-                        <div>
-
-                            @if(
-                                !empty($notification->data['task_id']) ||
-                                !empty($notification->data['announcement_id'])
-                            )
-
-                                <form
-                                    action="{{ route('notifications.read', $notification->id) }}"
-                                    method="POST"
-                                >
-
-                                    @csrf
-                                    @method('PATCH')
-
-                                    <button
-                                        type="submit"
-                                        class="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                                    >
-                                        View
-                                    </button>
-
-                                </form>
-
-                            @else
-
-                                @if(!$notification->read_at)
-
-                                    <form
-                                        action="{{ route('notifications.read', $notification->id) }}"
-                                        method="POST"
-                                    >
-
-                                        @csrf
-                                        @method('PATCH')
-
-                                        <button
-                                            type="submit"
-                                            class="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                                        >
-                                            Mark Read
-                                        </button>
-
-                                    </form>
-
-                                @else
-
-                                    <span class="text-xs text-slate-400">
-                                        Read
-                                    </span>
-
-                                @endif
-
-                            @endif
-
-                        </div>
-
-                    </div>
+                    <p>Academic Task and Notification System</p>
 
                 </div>
 
-            @empty
-
-                <div class="p-10 text-center">
-
-                    <div class="text-4xl mb-3">
-                        🔔
-                    </div>
-
-                    <p class="text-slate-500">
-                        You don't have any notifications yet.
-                    </p>
-
-                </div>
-
-            @endforelse
+            </footer>
 
         </div>
 
-    </div>
+        {{-- Mobile Bottom Navigation --}}
+        <x-bottom-navigation />
 
-</div>
+    @else
 
-@endsection
+        <main class="min-h-screen">
+            @yield('content')
+        </main>
+
+    @endauth
+
+    @stack('scripts')
+
+    {{-- Mobile More Menu Controls --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const openButton = document.getElementById('open-more-menu');
+            const closeButton = document.getElementById('close-more-menu');
+            const menu = document.getElementById('mobile-more-menu');
+            const overlay = document.getElementById('more-menu-overlay');
+
+            if (!openButton || !closeButton || !menu || !overlay) {
+                return;
+            }
+
+            let previousFocus = null;
+
+            function openMenu() {
+                previousFocus = document.activeElement;
+
+                menu.classList.remove('hidden');
+                overlay.classList.remove('hidden');
+
+                document.body.classList.add('overflow-hidden');
+                openButton.setAttribute('aria-expanded', 'true');
+
+                closeButton.focus();
+            }
+
+            function closeMenu() {
+                menu.classList.add('hidden');
+                overlay.classList.add('hidden');
+
+                document.body.classList.remove('overflow-hidden');
+                openButton.setAttribute('aria-expanded', 'false');
+
+                if (previousFocus) {
+                    previousFocus.focus();
+                }
+            }
+
+            openButton.addEventListener('click', openMenu);
+            closeButton.addEventListener('click', closeMenu);
+            overlay.addEventListener('click', closeMenu);
+
+            document.addEventListener('keydown', function (event) {
+                if (menu.classList.contains('hidden')) {
+                    return;
+                }
+
+                if (event.key === 'Escape') {
+                    closeMenu();
+                }
+
+                if (event.key === 'Tab') {
+                    const focusable = Array.from(
+                        menu.querySelectorAll(
+                            'a[href], button:not([disabled]), input:not([disabled])'
+                        )
+                    ).filter(element => element.getClientRects().length > 0);
+
+                    if (!focusable.length) {
+                        event.preventDefault();
+                        return;
+                    }
+
+                    const first = focusable[0];
+                    const last = focusable[focusable.length - 1];
+
+                    if (event.shiftKey && document.activeElement === first) {
+                        event.preventDefault();
+                        last.focus();
+                    } else if (!event.shiftKey && document.activeElement === last) {
+                        event.preventDefault();
+                        first.focus();
+                    }
+                }
+            });
+
+            window.addEventListener('resize', function () {
+                if (window.innerWidth >= 1024 &&
+                    !menu.classList.contains('hidden')) {
+                    closeMenu();
+                }
+            });
+
+        });
+    </script>
+
+</body>
+</html>
