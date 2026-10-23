@@ -7,8 +7,8 @@
 @php
     $user = auth()->user();
 
-    $profilePictureUrl = $user->profile_picture
-        ? \Illuminate\Support\Facades\Storage::disk('public')->url($user->profile_picture)
+    $profilePictureUrl = !empty($user->profile_picture)
+        ? \Illuminate\Support\Facades\Storage::url($user->profile_picture)
         : null;
 
     $fullName = trim(
@@ -312,31 +312,32 @@
             <div class="settings-section">
                 <div style="display: flex; align-items: center; gap: 22px; flex-wrap: wrap;">
 
-                    <div>
-                        <div
-                            class="settings-avatar settings-avatar-fallback"
-                            style="position: relative; overflow: hidden;"
+                    <div
+                        class="settings-avatar settings-avatar-fallback"
+                        style="position: relative; overflow: hidden;"
+                    >
+                        <img
+                            id="profile-preview"
+                            src="{{ $profilePictureUrl ?? '' }}"
+                            alt="Profile picture"
+                            style="
+                                position: absolute;
+                                inset: 0;
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                                border-radius: 50%;
+                            "
+                            @if (!$profilePictureUrl) hidden @endif
+                            onerror="this.hidden = true; document.getElementById('profile-fallback').hidden = false;"
                         >
-                            <img
-                                id="profile-preview"
-                                src="{{ $profilePictureUrl ?? '' }}"
-                                alt="Profile picture"
-                                style="
-                                    position: absolute;
-                                    inset: 0;
-                                    width: 100%;
-                                    height: 100%;
-                                    object-fit: cover;
-                                    border-radius: 50%;
-                                "
-                                @if (!$profilePictureUrl) hidden @endif
-                            >
 
-                            <span id="profile-fallback"
-                                @if ($profilePictureUrl) hidden @endif>
-                                {{ $initials }}
-                            </span>
-                        </div>
+                        <span
+                            id="profile-fallback"
+                            @if ($profilePictureUrl) hidden @endif
+                        >
+                            {{ $initials }}
+                        </span>
                     </div>
 
                     <div style="flex: 1; min-width: 200px;">
