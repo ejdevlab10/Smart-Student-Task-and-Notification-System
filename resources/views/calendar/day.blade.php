@@ -76,7 +76,7 @@
 
                 <div class="mx-auto flex h-14 w-14 items-center justify-center
                             rounded-full bg-slate-100 text-2xl">
-                    📅
+                    <i data-lucide="calendar-days" class="w-5 h-5"></i>
                 </div>
 
                 <h2 class="mt-4 text-lg font-semibold text-slate-900">

@@ -184,14 +184,17 @@
 
     </nav>
 
-    {{-- Settings (placeholder) --}}
+    {{-- Account Settings --}}
     <div class="p-4 border-t border-slate-700">
 
-        <a href="#"
-           class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800">
+        <a href="{{ route('settings.index') }}"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl transition
+        {{ request()->routeIs('settings.*')
+                ? 'bg-blue-600 text-white'
+                : 'text-slate-300 hover:bg-slate-800' }}">
 
             <i data-lucide="settings" class="w-5 h-5"></i>
-            <span>Settings</span>
+            <span class="font-medium">Settings</span>
         </a>
 
     </div>

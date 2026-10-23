@@ -1,3 +1,9 @@
+@php
+    $user = auth()->user();
+
+    $unreadNotifications = $user->unreadNotifications()->count();
+@endphp
+
 <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 lg:px-8">
 
     {{-- Left Side --}}
@@ -27,10 +33,6 @@
         >
             <i data-lucide="bell" class="w-6 h-6"></i>
 
-            @php
-                $unreadNotifications = auth()->user()->unreadNotifications()->count();
-            @endphp
-
             @if($unreadNotifications > 0)
                 <span class="absolute -top-2 -right-2 bg-red-500 text-white
                              text-[10px] min-w-4 h-4 px-1 rounded-full
@@ -43,20 +45,43 @@
         {{-- User Information --}}
         <div class="flex items-center gap-2 sm:gap-3">
 
-            {{-- User Initial --}}
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-600
-                        text-white flex items-center justify-center font-semibold shrink-0">
-                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+            {{-- Profile Picture or Default Initial --}}
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full
+                        bg-blue-600 text-white flex items-center
+                        justify-center font-semibold shrink-0 overflow-hidden
+                        ring-2 ring-slate-100">
+
+                @if(!empty($user->profile_picture))
+                    <img
+                        src="{{ \Illuminate\Support\Facades\Storage::url($user->profile_picture) }}"
+                        alt="{{ $user->name }}'s profile picture"
+                        class="w-full h-full object-cover"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                    >
+
+                    <span
+                        class="w-full h-full items-center justify-center"
+                        style="display: none;"
+                        aria-hidden="true"
+                    >
+                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                    </span>
+                @else
+                    <span>
+                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                    </span>
+                @endif
+
             </div>
 
             {{-- User Details --}}
             <div class="hidden sm:block">
                 <p class="text-sm font-semibold text-slate-800">
-                    {{ auth()->user()->name }}
+                    {{ $user->name }}
                 </p>
 
                 <p class="text-xs text-slate-500">
-                    {{ ucfirst(auth()->user()->role) }}
+                    {{ ucfirst($user->role) }}
                 </p>
             </div>
 

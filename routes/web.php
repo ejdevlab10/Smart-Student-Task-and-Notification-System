@@ -13,6 +13,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TaskSubmissionController;
+use App\Http\Controllers\SettingsController;
 
 // ========================
 // AUTHENTICATED ROUTES
@@ -37,6 +38,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/calendar/day/{date}', [CalendarController::class, 'day'])
         ->where('date', '[0-9]{4}-[0-9]{2}-[0-9]{2}')
         ->name('calendar.day');
+
+
+    // ========================
+    // ACCOUNT SETTINGS
+    // ========================
+
+    Route::get('/settings', [SettingsController::class, 'index'])
+        ->name('settings.index');
+
+    Route::put('/settings/profile', [SettingsController::class, 'updateProfile'])
+        ->name('settings.profile.update');
 
     // ========================
     // TASKS

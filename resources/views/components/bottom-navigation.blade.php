@@ -7,19 +7,19 @@
             'label' => 'Home',
             'icon' => 'house',
             'route' => 'dashboard',
-            'active' => request()->routeIs('dashboard'),
-        ],
-        [
-            'label' => 'Calendar',
-            'icon' => 'calendar-days',
-            'route' => 'calendar.index',
-            'active' => request()->routeIs('calendar.*'),
+            'active' => request()->routeIs('dashboard', 'dashboard.index'),
         ],
         [
             'label' => $user->isStudent() ? 'My Tasks' : 'Tasks',
             'icon' => 'clipboard-list',
             'route' => 'tasks.index',
             'active' => request()->routeIs('tasks.*'),
+        ],
+        [
+            'label' => 'Calendar',
+            'icon' => 'calendar-days',
+            'route' => 'calendar.index',
+            'active' => request()->routeIs('calendar.*'),
         ],
         [
             'label' => 'News',
@@ -29,6 +29,33 @@
         ],
     ];
 @endphp
+
+{{-- Animation for the active navigation icon --}}
+<style>
+    @keyframes nav-icon-pop {
+        0% {
+            transform: scale(0.8);
+        }
+
+        65% {
+            transform: scale(1.2);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .nav-icon-active {
+        animation: nav-icon-pop 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .nav-icon-active {
+            animation: none;
+        }
+    }
+</style>
 
 {{-- Mobile Bottom Navigation --}}
 <nav
@@ -41,36 +68,52 @@
         @foreach($tabs as $tab)
             <a
                 href="{{ route($tab['route']) }}"
-                class="flex flex-1 flex-col items-center justify-center gap-1
-                       rounded-xl px-1 py-2 transition-colors
-                       {{ $tab['active']
-                            ? 'text-blue-600 bg-blue-50'
-                            : 'text-slate-500 hover:text-blue-600 hover:bg-slate-50' }}"
+                aria-label="{{ $tab['label'] }}"
+                title="{{ $tab['label'] }}"
                 @if($tab['active']) aria-current="page" @endif
+                class="group flex flex-1 items-center justify-center
+                       rounded-xl py-1.5 transition-colors duration-200
+                       {{ $tab['active']
+                            ? 'text-blue-600'
+                            : 'text-slate-500 hover:text-blue-600' }}"
             >
-                <i data-lucide="{{ $tab['icon'] }}" class="h-5 w-5"></i>
-
-                <span class="text-[10px] font-semibold">
-                    {{ $tab['label'] }}
+                <span
+                    class="flex h-12 w-14 items-center justify-center
+                           rounded-2xl transition-all duration-300 ease-out
+                           {{ $tab['active']
+                                ? 'bg-blue-100'
+                                : 'bg-transparent group-hover:bg-slate-100' }}"
+                >
+                    <i
+                        data-lucide="{{ $tab['icon'] }}"
+                        class="{{ $tab['active']
+                            ? 'nav-icon-active h-7 w-7'
+                            : 'h-6 w-6' }}
+                            transition-transform duration-300 ease-out"
+                    ></i>
                 </span>
             </a>
         @endforeach
 
-        {{-- More Menu --}}
+        {{-- More Menu Button --}}
         <button
             type="button"
             id="open-more-menu"
-            class="flex flex-1 flex-col items-center justify-center gap-1
-                   rounded-xl px-1 py-2 text-slate-500
-                   hover:text-blue-600 hover:bg-slate-50"
+            class="group flex flex-1 items-center justify-center
+                   rounded-xl py-1.5 text-slate-500
+                   hover:text-blue-600 transition-colors duration-200"
             aria-label="Open more navigation options"
             aria-controls="mobile-more-menu"
             aria-expanded="false"
+            title="More"
         >
-            <i data-lucide="menu" class="h-5 w-5"></i>
-
-            <span class="text-[10px] font-semibold">
-                More
+            <span
+                class="flex h-12 w-14 items-center justify-center
+                       rounded-2xl bg-transparent
+                       transition-all duration-300 ease-out
+                       group-hover:bg-slate-100"
+            >
+                <i data-lucide="menu" class="h-6 w-6"></i>
             </span>
         </button>
 
@@ -94,7 +137,6 @@
     aria-modal="true"
     aria-label="More navigation options"
 >
-
     <div class="mb-5 flex items-center justify-between">
 
         <div>
@@ -121,55 +163,54 @@
     <div class="max-h-[55vh] space-y-2 overflow-y-auto">
 
         {{-- Dashboard --}}
-        <a href="{{ route('dashboard') }}"
-           class="flex items-center gap-3 rounded-xl p-3 hover:bg-slate-100">
+        <a
+            href="{{ route('dashboard') }}"
+            class="flex items-center gap-3 rounded-xl p-3 hover:bg-slate-100"
+        >
             <i data-lucide="layout-dashboard" class="h-5 w-5 text-blue-600"></i>
             <span>Dashboard</span>
         </a>
-
-        {{-- Notifications --}}
-        <a href="{{ route('notifications.index') }}"
-           class="flex items-center gap-3 rounded-xl p-3 hover:bg-slate-100">
-            <i data-lucide="bell" class="h-5 w-5 text-blue-600"></i>
-            <span>Notifications</span>
+        {{-- Account Settings --}}
+        <a
+            href="{{ route('settings.index') }}"
+            class="flex items-center gap-3 rounded-xl p-3
+                {{ request()->routeIs('settings.*')
+                        ? 'bg-blue-50 text-blue-700'
+                        : 'text-slate-700 hover:bg-slate-100' }}"
+            @if(request()->routeIs('settings.*')) aria-current="page" @endif
+        >
+            <i data-lucide="settings" class="h-5 w-5 text-blue-600"></i>
+            <span class="font-medium">Account Settings</span>
         </a>
 
         {{-- Admin Management --}}
         @if($user->role === 'admin')
 
-            <a href="{{ route('admin.students.index') }}"
-               class="flex items-center gap-3 rounded-xl p-3 hover:bg-slate-100">
+            <a
+                href="{{ route('admin.students.index') }}"
+                class="flex items-center gap-3 rounded-xl p-3 hover:bg-slate-100"
+            >
                 <i data-lucide="users" class="h-5 w-5 text-blue-600"></i>
                 <span>Manage Students</span>
             </a>
 
-            <a href="{{ route('admin.teachers.index') }}"
-               class="flex items-center gap-3 rounded-xl p-3 hover:bg-slate-100">
+            <a
+                href="{{ route('admin.teachers.index') }}"
+                class="flex items-center gap-3 rounded-xl p-3 hover:bg-slate-100"
+            >
                 <i data-lucide="graduation-cap" class="h-5 w-5 text-blue-600"></i>
                 <span>Manage Teachers</span>
             </a>
 
-            <a href="{{ route('admin.classes.index') }}"
-               class="flex items-center gap-3 rounded-xl p-3 hover:bg-slate-100">
+            <a
+                href="{{ route('admin.classes.index') }}"
+                class="flex items-center gap-3 rounded-xl p-3 hover:bg-slate-100"
+            >
                 <i data-lucide="school" class="h-5 w-5 text-blue-600"></i>
                 <span>Manage Classes</span>
             </a>
 
         @endif
-
-        {{-- Logout --}}
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-
-            <button
-                type="submit"
-                class="flex w-full items-center gap-3 rounded-xl p-3
-                       text-red-600 hover:bg-red-50"
-            >
-                <i data-lucide="log-out" class="h-5 w-5"></i>
-                <span>Logout</span>
-            </button>
-        </form>
 
     </div>
 </div>
