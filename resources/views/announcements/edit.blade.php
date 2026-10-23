@@ -10,14 +10,16 @@
 
     <div class="max-w-3xl mx-auto">
 
-        <a href="{{ route('announcements.show', $announcement) }}"
-           class="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700">
-
-            <i data-lucide="arrow-left" class="w-4 h-4"></i>
-
-            Back to Announcement
-
-        </a>
+        <div class="mb-6">
+            <x-back-button
+                fallback="admin.classes.index"
+                label="Back"
+                class="inline-flex items-center justify-center gap-2 rounded-xl
+            border border-slate-300 bg-white px-4 py-2.5
+            text-sm font-medium text-slate-700 hover:bg-slate-50"
+            />
+            </x>
+        </div>
 
 
         <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-8 mt-6">

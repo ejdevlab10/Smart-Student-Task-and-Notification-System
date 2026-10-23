@@ -9,14 +9,16 @@
 
     {{-- Page Header --}}
     <div>
-        <a href="{{ route('admin.classes.index') }}"
-           class="inline-flex items-center gap-2 text-sm text-slate-500
-                  hover:text-blue-600 transition mb-4">
-
-            <i data-lucide="arrow-left" class="w-4 h-4"></i>
-            Back to Classes
-
-        </a>
+        <div class="mb-6">
+            <x-back-button
+                fallback="admin.classes.index"
+                label="Back"
+                class="inline-flex items-center justify-center gap-2 rounded-xl
+            border border-slate-300 bg-white px-4 py-2.5
+            text-sm font-medium text-slate-700 hover:bg-slate-50"
+            />
+            </x>
+        </div>
 
         <h1 class="text-2xl font-bold text-slate-800">
             Create Class

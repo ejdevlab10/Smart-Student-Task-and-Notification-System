@@ -18,10 +18,12 @@
 <div class="p-6 lg:p-8">
     <div class="max-w-4xl mx-auto">
 
-        <a href="{{ route('tasks.show', $task) }}"
-           class="text-sm text-blue-600 hover:text-blue-700">
-            &larr; Back to Task
-        </a>
+        <div class="mb-6">
+            <x-back-button
+                fallback="tasks.index"
+                label="Back"
+            />
+        </div>
 
         <div class="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 lg:p-8">
 

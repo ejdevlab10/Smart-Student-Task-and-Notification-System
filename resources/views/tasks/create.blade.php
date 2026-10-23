@@ -5,10 +5,16 @@
 
     {{-- Header --}}
     <div class="mb-8">
-        <a href="{{ route('tasks.index') }}"
-           class="text-sm text-blue-600 hover:text-blue-800">
-            &larr; Back to Tasks
-        </a>
+        <div class="mb-6">
+            <x-back-button
+                fallback="admin.classes.index"
+                label="Back"
+                class="inline-flex items-center justify-center gap-2 rounded-xl
+            border border-slate-300 bg-white px-4 py-2.5
+            text-sm font-medium text-slate-700 hover:bg-slate-50"
+            />
+            </x>
+        </div>
 
         <h1 class="text-3xl font-bold text-slate-800 mt-3">
             Create New Task

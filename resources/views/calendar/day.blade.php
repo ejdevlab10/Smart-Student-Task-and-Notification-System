@@ -11,7 +11,7 @@
     <div class="mx-auto max-w-4xl">
 
         {{-- Back to Calendar --}}
-        <a
+        <!-- <a
             href="{{ route('calendar.index', [
                 'month' => $selectedDate->format('Y-m')
             ]) }}"
@@ -19,7 +19,17 @@
                    text-blue-700 hover:text-blue-800"
         >
             &larr; Back to Calendar
-        </a>
+        </a> -->
+        <div class="mb-6">
+            <x-back-button
+                fallback="admin.classes.index"
+                label="Back"
+                class="inline-flex items-center justify-center gap-2 rounded-xl
+            border border-slate-300 bg-white px-4 py-2.5
+            text-sm font-medium text-slate-700 hover:bg-slate-50"
+            />
+            </x>
+        </div>
 
         {{-- Page Header --}}
         <div class="mb-6 flex flex-wrap items-center justify-between gap-4">

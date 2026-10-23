@@ -17,14 +17,14 @@
             </p>
         </div>
 
-        <a href="{{ route('admin.classes.index') }}"
-           class="inline-flex items-center justify-center gap-2 rounded-xl
-                  border border-slate-300 bg-white px-4 py-2.5
-                  text-sm font-medium text-slate-700 hover:bg-slate-50">
-
-            <i data-lucide="arrow-left" class="w-4 h-4"></i>
-            Back to Classes
-        </a>
+        <x-back-button
+            fallback="admin.classes.index"
+            label="Back"
+            class="inline-flex items-center justify-center gap-2 rounded-xl
+           border border-slate-300 bg-white px-4 py-2.5
+           text-sm font-medium text-slate-700 hover:bg-slate-50"
+        />
+        </x>
     </div>
 
     {{-- Validation Errors --}}
