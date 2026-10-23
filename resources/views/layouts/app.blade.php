@@ -145,6 +145,47 @@
 
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const logoutAction = @json(route('logout'));
+
+            document.querySelectorAll('form').forEach(function (form) {
+                if (form.action !== logoutAction) {
+                    return;
+                }
+
+                form.addEventListener('submit', function (event) {
+                    // Stop duplicate submissions.
+                    if (form.dataset.logoutSubmitting === 'true') {
+                        event.preventDefault();
+                        return;
+                    }
+
+                    // Ask for confirmation before logging out.
+                    const confirmed = window.confirm(
+                        'Are you sure you want to log out?'
+                    );
+
+                    if (!confirmed) {
+                        event.preventDefault();
+                        return;
+                    }
+
+                    // Prevent additional clicks after confirmation.
+                    form.dataset.logoutSubmitting = 'true';
+
+                    form.querySelectorAll('button[type="submit"], input[type="submit"]')
+                        .forEach(function (button) {
+                            button.disabled = true;
+                            button.classList.add(
+                                'opacity-60',
+                                'cursor-not-allowed'
+                            );
+                        });
+                });
+            });
+        });
+    </script>
 
 </body>
 </html>

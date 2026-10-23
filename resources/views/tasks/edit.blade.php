@@ -20,9 +20,13 @@
 
         <div class="mb-6">
             <x-back-button
-                fallback="tasks.index"
+                fallback="admin.classes.index"
                 label="Back"
+                class="inline-flex items-center justify-center gap-2 rounded-xl
+            border border-slate-300 bg-white px-4 py-2.5
+            text-sm font-medium text-slate-700 hover:bg-slate-50"
             />
+            </x>
         </div>
 
         <div class="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 lg:p-8">
